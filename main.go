@@ -1,16 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"tonic-quest/enemy"
 	"tonic-quest/keys"
+	"tonic-quest/player"
+	"tonic-quest/state"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Game struct {
-	Player *keys.Player
+	SoundPlayer *keys.Player
+	Enemy       *enemy.Enemy
+	Player      *player.Player
+	GameState   *state.Manager
 }
 
 var keyBuffer = []ebiten.Key{}
@@ -26,17 +32,29 @@ var flatKeys map[ebiten.Key]string = map[ebiten.Key]string{
 }
 
 func (g *Game) Update() error {
-	keyBuffer = inpututil.AppendJustPressedKeys(keyBuffer)
-	if len(keyBuffer) > 0 {
-		input := keyBuffer[0]
-		key := flatKeys[input]
+	if g.GameState.IsEnemyState() {
+		g.Enemy.Attack()
+	}
 
-		if key != "" {
-			g.Player.Keys[key].Rewind()
-			g.Player.Keys[key].Play()
+	if g.GameState.IsPlayerState() {
+		move := g.Player.GetMove()
+
+		if move != "" {
+			g.Player.AttackList = append(g.Player.AttackList, move)
+
+			if g.Player.AttackList[len(g.Player.AttackList)-1] != g.Enemy.AttackList[len(g.Player.AttackList)-1] {
+				fmt.Println("Incorrect, the correct keys were: %s", g.Enemy.AttackList)
+				g.Enemy.AttackList = []string{}
+				g.Player.AttackList = []string{}
+				g.GameState.SwitchToEnemyState()
+			} else if len(g.Player.AttackList) == len(g.Enemy.AttackList) {
+				fmt.Println("Correct!")
+				g.Enemy.AttackList = []string{}
+				g.Player.AttackList = []string{}
+				g.GameState.SwitchToEnemyState()
+			}
 		}
 	}
-	keyBuffer = []ebiten.Key{}
 
 	return nil
 }
@@ -50,14 +68,21 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	context := audio.NewContext(48000)
+	manager := state.InitStateManager()
 
-	player, err := keys.InitPlayer(context)
+	soundPlayer, err := keys.InitPlayer(context)
 	if err != nil {
 		panic(err)
 	}
 
+	enemy := enemy.InitEnemy([]string{"C", "D", "E", "F", "G", "A", "B"}, soundPlayer, manager)
+	player := player.InitPlayer(soundPlayer, flatKeys, manager)
+
 	game := &Game{
-		Player: player,
+		SoundPlayer: soundPlayer,
+		Enemy:       enemy,
+		Player:      player,
+		GameState:   manager,
 	}
 
 	ebiten.SetWindowSize(640, 480)
