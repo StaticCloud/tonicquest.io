@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"tonic-quest/entities"
 	"tonic-quest/keys"
 	"tonic-quest/state"
@@ -27,30 +26,11 @@ var flatKeys map[ebiten.Key]string = map[ebiten.Key]string{
 }
 
 func (g *Game) Update() error {
-	g.GameState.Run()
-	// if g.GameState.IsEnemyState() {
-	// 	g.Enemy.Attack()
-	// }
+	err := g.GameState.Run()
 
-	// if g.GameState.IsPlayerState() {
-	// 	move := g.Player.Attack()
-
-	// 	if move != "" {
-	// 		g.Player.AttackList = append(g.Player.AttackList, move)
-
-	// 		if g.Player.AttackList[len(g.Player.AttackList)-1] != g.Enemy.AttackList[len(g.Player.AttackList)-1] {
-	// 			fmt.Println("Incorrect, the correct keys were: %s", g.Enemy.AttackList)
-	// 			g.Enemy.AttackList = []string{}
-	// 			g.Player.AttackList = []string{}
-	// 			g.GameState.SwitchToEnemyState()
-	// 		} else if len(g.Player.AttackList) == len(g.Enemy.AttackList) {
-	// 			fmt.Println("Correct!")
-	// 			g.Enemy.AttackList = []string{}
-	// 			g.Player.AttackList = []string{}
-	// 			g.GameState.SwitchToEnemyState()
-	// 		}
-	// 	}
-	// }
+	if err != nil {
+		return ebiten.Termination
+	}
 
 	return nil
 }
@@ -82,6 +62,6 @@ func main() {
 	ebiten.SetWindowTitle("Tonic Quest")
 
 	if err := ebiten.RunGame(game); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }

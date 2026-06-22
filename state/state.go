@@ -9,8 +9,9 @@ import (
 type State int
 
 const (
-	PLAYER_TURN State = 0
-	ENEMY_TURN  State = 1
+	PLAYER_TURN State = iota
+	ENEMY_TURN
+	TERMINAL
 )
 
 type Manager struct {
@@ -29,7 +30,7 @@ func InitStateManager(soundManager *keys.Player, player *entities.Player, enemy 
 	}
 }
 
-func (m *Manager) Run() {
+func (m *Manager) Run() error {
 	if m.IsEnemyState() {
 		for range 3 {
 			move := m.Enemy.Attack()
@@ -46,14 +47,27 @@ func (m *Manager) Run() {
 			m.Player.AttackList = append(m.Player.AttackList, move)
 
 			if m.Player.AttackList[len(m.Player.AttackList)-1] != m.Enemy.AttackList[len(m.Player.AttackList)-1] {
-				fmt.Println("Incorrect, the correct keys were: ", m.Enemy.AttackList)
+				m.Player.TakeDamage(10)
 				m.NewTurn(m.SwitchToEnemyState)
 			} else if len(m.Player.AttackList) == len(m.Enemy.AttackList) {
-				fmt.Println("Correct!")
+				m.Enemy.TakeDamage(10)
 				m.NewTurn(m.SwitchToEnemyState)
 			}
 		}
 	}
+
+	if m.IsTerminalState() {
+		return fmt.Errorf("Terminated")
+	}
+
+	return nil
+}
+
+func (m *Manager) LogGame() {
+	fmt.Println("-----------------")
+	fmt.Printf("Player Health: %d \n", m.Player.Health)
+	fmt.Printf("Enemy Health: %d \n", m.Enemy.Health)
+	fmt.Println("-----------------")
 }
 
 func (m *Manager) PlayKey(key string) {
@@ -62,10 +76,16 @@ func (m *Manager) PlayKey(key string) {
 }
 
 func (m *Manager) NewTurn(newState func()) {
-	m.Enemy.AttackList = []string{}
-	m.Player.AttackList = []string{}
+	m.LogGame()
 
-	newState()
+	if m.Enemy.Health <= 0 || m.Player.Health <= 0 {
+		m.SwitchToTerminalState()
+	} else {
+		m.Enemy.AttackList = []string{}
+		m.Player.AttackList = []string{}
+
+		newState()
+	}
 }
 
 func (m *Manager) SwitchToEnemyState() {
@@ -76,10 +96,18 @@ func (m *Manager) SwitchToPlayerState() {
 	m.CurrentState = PLAYER_TURN
 }
 
+func (m *Manager) SwitchToTerminalState() {
+	m.CurrentState = TERMINAL
+}
+
 func (m *Manager) IsEnemyState() bool {
 	return m.CurrentState == ENEMY_TURN
 }
 
 func (m *Manager) IsPlayerState() bool {
 	return m.CurrentState == PLAYER_TURN
+}
+
+func (m *Manager) IsTerminalState() bool {
+	return m.CurrentState == TERMINAL
 }

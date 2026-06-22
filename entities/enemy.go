@@ -27,3 +27,7 @@ func (e *Enemy) Attack() string {
 
 	return attack
 }
+
+func (e *Enemy) TakeDamage(amount int) {
+	e.Health = e.Health - amount
+}

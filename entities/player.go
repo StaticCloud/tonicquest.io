@@ -29,3 +29,7 @@ func (p *Player) Attack() string {
 	}
 	return ""
 }
+
+func (p *Player) TakeDamage(amount int) {
+	p.Health = p.Health - amount
+}
