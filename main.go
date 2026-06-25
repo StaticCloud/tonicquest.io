@@ -2,15 +2,18 @@ package main
 
 import (
 	"tonic-quest/entities"
+	"tonic-quest/game"
+	"tonic-quest/graphics"
 	"tonic-quest/keys"
-	"tonic-quest/state"
+	"tonic-quest/utils"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 )
 
 type Game struct {
-	GameState *state.Manager
+	GameManager *game.Manager
+	Graphics    *graphics.BackgroundManager
 }
 
 var keyBuffer = []ebiten.Key{}
@@ -26,7 +29,7 @@ var flatKeys map[ebiten.Key]string = map[ebiten.Key]string{
 }
 
 func (g *Game) Update() error {
-	err := g.GameState.Run()
+	err := g.GameManager.Run()
 
 	if err != nil {
 		return ebiten.Termination
@@ -36,10 +39,11 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	g.GameManager.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	return 256, 224
 }
 
 func main() {
@@ -47,15 +51,27 @@ func main() {
 	enemy := entities.InitEnemy([]string{"C", "D", "E", "F", "G", "A", "B"}, 100)
 	player := entities.InitPlayer(flatKeys, 100)
 
+	background, backgroundErr := graphics.InitBackgroundManager()
+	if backgroundErr != nil {
+		panic(backgroundErr)
+	}
+
 	soundPlayer, err := keys.InitPlayer(context)
 	if err != nil {
 		panic(err)
 	}
 
-	manager := state.InitStateManager(soundPlayer, player, enemy)
+	gameContext := &utils.Context{
+		Player:   player,
+		Enemy:    enemy,
+		Sound:    soundPlayer,
+		Graphics: background,
+	}
+	manager := game.InitGameManager(gameContext)
 
 	game := &Game{
-		GameState: manager,
+		GameManager: manager,
+		Graphics:    background,
 	}
 
 	ebiten.SetWindowSize(640, 480)
