@@ -25,14 +25,19 @@ type Manager struct {
 }
 
 func InitGameManager(context *utils.Context) *Manager {
-	return &Manager{
-		CurrentState: GAMEPLAY,
+	manager := &Manager{
+		CurrentState: SPLASH,
 		Context:      context,
 		States: map[State]states.State{
 			SPLASH:   states.InitSplashState(context),
 			GAMEPLAY: states.InitGameplayState(context),
 		},
 	}
+
+	manager.States[SPLASH].SetEmitter(manager)
+	manager.States[GAMEPLAY].SetEmitter(manager)
+
+	return manager
 }
 
 func (m *Manager) Run() error {
@@ -40,40 +45,18 @@ func (m *Manager) Run() error {
 	if err != nil {
 		return err
 	}
-	// if m.IsEnemyState() {
-	// 	for range 3 {
-	// 		move := m.Context.Enemy.Attack()
-	// 		m.PlayKey(move)
-	// 	}
-
-	// 	m.SwitchToPlayerState()
-	// }
-
-	// if m.IsPlayerState() {
-	// 	move := m.Context.Player.Attack()
-
-	// 	if move != "" {
-	// 		m.Context.Player.AttackList = append(m.Context.Player.AttackList, move)
-
-	// 		if m.Context.Player.AttackList[len(m.Context.Player.AttackList)-1] != m.Context.Enemy.AttackList[len(m.Context.Player.AttackList)-1] {
-	// 			m.Context.Player.TakeDamage(10)
-	// 			m.NewTurn(m.SwitchToEnemyState)
-	// 		} else if len(m.Context.Player.AttackList) == len(m.Context.Enemy.AttackList) {
-	// 			m.Context.Enemy.TakeDamage(10)
-	// 			m.NewTurn(m.SwitchToEnemyState)
-	// 		}
-	// 	}
-	// }
-
-	// if m.IsTerminalState() {
-	// 	return fmt.Errorf("Terminated")
-	// }
-
 	return nil
 }
 
 func (m *Manager) Draw(screen *ebiten.Image) {
 	m.States[m.CurrentState].Draw(screen)
+}
+
+func (m *Manager) Emit(event utils.Event) {
+	switch {
+	case event == utils.SWITCH_TO_GAMEPLAY:
+		m.SwitchToGameplayState()
+	}
 }
 
 func (m *Manager) LogGame() {
@@ -99,6 +82,10 @@ func (m *Manager) NewTurn(newState func()) {
 
 		newState()
 	}
+}
+
+func (m *Manager) SwitchToGameplayState() {
+	m.CurrentState = GAMEPLAY
 }
 
 func (m *Manager) SwitchToEnemyState() {

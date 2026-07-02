@@ -8,6 +8,7 @@ import (
 
 type Gameplay struct {
 	Context *utils.Context
+	Emitter utils.Emitter
 }
 
 func InitGameplayState(context *utils.Context) *Gameplay {
@@ -22,4 +23,8 @@ func (s *Gameplay) Run() error {
 
 func (s *Gameplay) Draw(screen *ebiten.Image) {
 	screen.DrawImage(s.Context.Graphics.Backgrounds["carol"], &ebiten.DrawImageOptions{})
+}
+
+func (s *Gameplay) SetEmitter(emitter utils.Emitter) {
+	s.Emitter = emitter
 }
