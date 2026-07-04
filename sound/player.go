@@ -1,4 +1,4 @@
-package keys
+package sound
 
 import (
 	"fmt"
@@ -17,7 +17,21 @@ type Player struct {
 	Keys    map[string]*audio.Player
 }
 
-func LoadFile(name string, context *audio.Context) (*audio.Player, error) {
+func InitPlayer() (*Player, error) {
+	context := audio.NewContext(48000)
+	keyDict := map[string]*audio.Player{}
+
+	for _, key := range keys {
+		keyDict[key], _ = loadFile(fmt.Sprintf("./sound/%s.wav", key), context)
+	}
+
+	return &Player{
+		Context: context,
+		Keys:    keyDict,
+	}, nil
+}
+
+func loadFile(name string, context *audio.Context) (*audio.Player, error) {
 	file, fileErr := os.Open(name)
 	if fileErr != nil {
 		return nil, fileErr
@@ -30,17 +44,4 @@ func LoadFile(name string, context *audio.Context) (*audio.Player, error) {
 
 	return context.NewPlayerF32(decodedWav)
 
-}
-
-func InitPlayer(context *audio.Context) (*Player, error) {
-	keyDict := map[string]*audio.Player{}
-
-	for _, key := range keys {
-		keyDict[key], _ = LoadFile(fmt.Sprintf("./keys/%s.wav", key), context)
-	}
-
-	return &Player{
-		Context: context,
-		Keys:    keyDict,
-	}, nil
 }

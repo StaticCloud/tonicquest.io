@@ -1,35 +1,30 @@
 package states
 
 import (
-	"tonic-quest/utils"
+	"tonic-quest/orchestrator"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Splash struct {
-	Context *utils.Context
-	Emitter utils.Emitter
-	timer   float64
+	Orchestrator *orchestrator.Orchestrator
+	timer        float64
 }
 
-func InitSplashState(context *utils.Context) *Splash {
+func InitSplashState(orchestrator *orchestrator.Orchestrator) *Splash {
 	return &Splash{
-		Context: context,
+		Orchestrator: orchestrator,
 	}
 }
 
-func (s *Splash) Run() error {
+func (s *Splash) Run() (StateName, error) {
 	s.timer += 1.0 / 60.0 // increment by one tick
 	if s.timer >= 3.0 {
-		s.Emitter.Emit(utils.SWITCH_TO_GAMEPLAY)
+		return GAMEPLAY, nil
 	}
-	return nil
+	return SPLASH, nil
 }
 
 func (s *Splash) Draw(screen *ebiten.Image) {
-	screen.DrawImage(s.Context.Graphics.Backgrounds["splash"], &ebiten.DrawImageOptions{})
-}
-
-func (s *Splash) SetEmitter(emitter utils.Emitter) {
-	s.Emitter = emitter
+	screen.DrawImage(s.Orchestrator.Graphics.Backgrounds["splash"], &ebiten.DrawImageOptions{})
 }

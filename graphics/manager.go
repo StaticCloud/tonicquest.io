@@ -7,7 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-type BackgroundManager struct {
+type Manager struct {
 	Backgrounds map[string]*ebiten.Image
 }
 
@@ -18,7 +18,7 @@ var files map[string]string = map[string]string{
 
 var backgrounds map[string]*ebiten.Image = map[string]*ebiten.Image{}
 
-func InitBackgroundManager() (*BackgroundManager, error) {
+func InitManager() (*Manager, error) {
 	for k, v := range files {
 		file, _, err := ebitenutil.NewImageFromFile(v)
 		if err != nil {
@@ -28,7 +28,7 @@ func InitBackgroundManager() (*BackgroundManager, error) {
 		backgrounds[k] = file
 	}
 
-	return &BackgroundManager{
+	return &Manager{
 		Backgrounds: backgrounds,
 	}, nil
 }
