@@ -2,13 +2,13 @@ package entities
 
 import (
 	"math/rand"
-	"time"
 )
 
 type Enemy struct {
 	Moves      []string
 	Health     int
 	AttackList []string
+	timer      float64
 }
 
 func InitEnemy(moves []string, health int) *Enemy {
@@ -20,10 +20,16 @@ func InitEnemy(moves []string, health int) *Enemy {
 }
 
 func (e *Enemy) Attack() string {
-	random := rand.Intn(len(e.Moves))
-	time.Sleep(time.Second * 1)
-	attack := e.Moves[random]
-	e.AttackList = append(e.AttackList, attack)
+	e.timer += 1.0 / 60.0
+	attack := ""
+
+	if e.timer >= 1.0 {
+		random := rand.Intn(len(e.Moves))
+		attack = e.Moves[random]
+		e.AttackList = append(e.AttackList, attack)
+
+		e.timer = 0
+	}
 
 	return attack
 }

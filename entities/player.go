@@ -1,8 +1,6 @@
 package entities
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -27,8 +25,9 @@ func (p *Player) Attack() string {
 	keyBuffer = inpututil.AppendJustPressedKeys(keyBuffer)
 
 	if len(keyBuffer) > 0 {
-		fmt.Println(keyBuffer[0])
-		return p.Keys[keyBuffer[0]]
+		key := p.Keys[keyBuffer[0]]
+		p.AttackList = append(p.AttackList, key)
+		return key
 	}
 	return ""
 }
