@@ -15,6 +15,7 @@ const (
 	PLAYER_TURN
 	ENEMY_TURN
 	TERMINAL
+	OVERWORLD
 )
 
 type State interface {
@@ -30,8 +31,9 @@ type Manager struct {
 func InitManager(orchestrator *orchestrator.Orchestrator) *Manager {
 	return &Manager{
 		States: map[StateName]State{
-			SPLASH:   InitSplashState(orchestrator),
-			GAMEPLAY: InitGameplayState(orchestrator),
+			OVERWORLD: InitOverworldState(orchestrator),
+			SPLASH:    InitSplashState(orchestrator),
+			GAMEPLAY:  InitGameplayState(orchestrator),
 		},
 		State: SPLASH,
 	}

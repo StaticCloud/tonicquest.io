@@ -20,7 +20,7 @@ func InitSplashState(orchestrator *orchestrator.Orchestrator) *Splash {
 func (s *Splash) Run() (StateName, error) {
 	s.timer += 1.0 / 60.0
 	if s.timer >= 3.0 {
-		return GAMEPLAY, nil
+		return OVERWORLD, nil
 	}
 	return SPLASH, nil
 }
