@@ -10,12 +10,16 @@ import (
 type Overworld struct {
 	Orchestrator *orchestrator.Orchestrator
 	Player       *overworld.Player
+	Enemies      []*overworld.Enemy
 }
 
 func InitOverworldState(orchestrator *orchestrator.Orchestrator) *Overworld {
 	return &Overworld{
 		Orchestrator: orchestrator,
 		Player:       overworld.InitPlayer(),
+		Enemies: []*overworld.Enemy{
+			overworld.InitEnemy(200, 200),
+		},
 	}
 }
 
@@ -34,4 +38,16 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 		s.Orchestrator.Graphics.Sprites["carol"],
 		playerOptions,
 	)
+
+	for _, enemy := range s.Enemies {
+		enemyOptions := &ebiten.DrawImageOptions{}
+
+		enemyOptions.GeoM.Scale(0.1, 0.1)
+		enemyOptions.GeoM.Translate(float64(enemy.X), float64(enemy.Y))
+
+		screen.DrawImage(
+			s.Orchestrator.Graphics.Sprites["octopussy"],
+			enemyOptions,
+		)
+	}
 }
