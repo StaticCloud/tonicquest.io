@@ -29,7 +29,6 @@ const (
 type Gameplay struct {
 	Orchestrator *orchestrator.Orchestrator
 	Player       *entities.Player
-	Enemy        *entities.Enemy
 	Result       Result
 }
 
@@ -37,7 +36,6 @@ func InitGameplayState(orchestrator *orchestrator.Orchestrator) *Gameplay {
 	return &Gameplay{
 		Orchestrator: orchestrator,
 		Player:       entities.InitPlayer(flatKeys, 100),
-		Enemy:        entities.InitEnemy([]string{"C", "D", "E"}, 100),
 		Result:       NO_RESULT,
 	}
 }
@@ -46,23 +44,23 @@ func (s *Gameplay) Run() (StateName, error) {
 	if s.Result == NO_RESULT {
 		key := ""
 
-		if len(s.Enemy.AttackList) == 3 {
+		if len(s.Orchestrator.Globals.Enemy.AttackList) == 3 {
 			key = s.Player.Attack()
 
 			if len(s.Player.AttackList) > 0 {
-				if s.Player.AttackList[len(s.Player.AttackList)-1] != s.Enemy.AttackList[len(s.Player.AttackList)-1] {
+				if s.Player.AttackList[len(s.Player.AttackList)-1] != s.Orchestrator.Globals.Enemy.AttackList[len(s.Player.AttackList)-1] {
 					s.Player.Health -= 10
 					fmt.Println("Player takes 10 damage!")
 					s.Reset()
 				}
 				if len(s.Player.AttackList) == 3 {
-					s.Enemy.Health -= 10
+					s.Orchestrator.Globals.Enemy.Health -= 10
 					fmt.Println("Enemy takes 10 damage!")
 					s.Reset()
 				}
 			}
 		} else {
-			key = s.Enemy.Attack()
+			key = s.Orchestrator.Globals.Enemy.Attack()
 		}
 
 		s.PlayKey(key)
@@ -71,7 +69,7 @@ func (s *Gameplay) Run() (StateName, error) {
 			s.Result = ENEMY_WINS
 		}
 
-		if s.Enemy.Health <= 0 {
+		if s.Orchestrator.Globals.Enemy.Health <= 0 {
 			s.Result = PLAYER_WINS
 		}
 	}
@@ -106,13 +104,13 @@ func (s *Gameplay) Draw(screen *ebiten.Image) {
 	enemyOptions.GeoM.Translate(150.0, 0.0)
 
 	screen.DrawImage(
-		s.Orchestrator.Graphics.Sprites["octopussy"],
+		s.Orchestrator.Graphics.Sprites[s.Orchestrator.Globals.Enemy.Sprite],
 		enemyOptions,
 	)
 
 	enemyHealthOptions := &ebiten.DrawImageOptions{}
 
-	enemyHealthOptions.GeoM.Scale(0.1*float64(s.Enemy.Health), 0.2)
+	enemyHealthOptions.GeoM.Scale(0.1*float64(s.Orchestrator.Globals.Enemy.Health), 0.2)
 	enemyHealthOptions.GeoM.Translate(150.0, 0.0)
 
 	screen.DrawImage(
@@ -134,6 +132,6 @@ func (s *Gameplay) PlayKey(key string) {
 }
 
 func (s *Gameplay) Reset() {
-	s.Enemy.AttackList = []string{}
+	s.Orchestrator.Globals.Enemy.AttackList = []string{}
 	s.Player.AttackList = []string{}
 }

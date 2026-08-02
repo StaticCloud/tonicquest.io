@@ -1,6 +1,7 @@
 package game
 
 import (
+	"tonic-quest/globals"
 	"tonic-quest/graphics"
 	"tonic-quest/orchestrator"
 	"tonic-quest/sound"
@@ -16,6 +17,7 @@ type Game struct {
 func Init() *Game {
 	graphics, graphicsError := graphics.InitManager()
 	player, playerError := sound.InitPlayer()
+	globals, globalsError := globals.InitGlobals()
 
 	if graphicsError != nil {
 		panic(graphicsError)
@@ -25,7 +27,11 @@ func Init() *Game {
 		panic(graphicsError)
 	}
 
-	orchestrator := orchestrator.InitOrchestrator(graphics, player)
+	if globalsError != nil {
+		panic(globalsError)
+	}
+
+	orchestrator := orchestrator.InitOrchestrator(graphics, player, globals)
 
 	return &Game{
 		StateManager: states.InitManager(orchestrator),
@@ -45,5 +51,5 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 256, 224
+	return 240, 160
 }

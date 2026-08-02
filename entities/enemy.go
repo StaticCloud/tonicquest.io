@@ -5,6 +5,8 @@ import (
 )
 
 type Enemy struct {
+	Name       string
+	Sprite     string
 	Moves      []string
 	Health     int
 	AttackList []string

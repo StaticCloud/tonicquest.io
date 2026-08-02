@@ -1,15 +1,20 @@
 package graphics
 
 import (
+	"bytes"
 	_ "image/png"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 type Manager struct {
 	Sprites     map[string]*ebiten.Image
 	Backgrounds map[string]*ebiten.Image
+	Font        *text.GoTextFaceSource
 }
 
 var sourceBackgrounds map[string]string = map[string]string{
@@ -18,13 +23,15 @@ var sourceBackgrounds map[string]string = map[string]string{
 }
 
 var sourceSprites map[string]string = map[string]string{
-	"carol":     "./graphics/sprites/carol_sprite.png",
-	"health":    "./graphics/sprites/health.png",
-	"octopussy": "./graphics/sprites/octopussy.png",
+	"carol":   "./graphics/sprites/carol_sprite.png",
+	"health":  "./graphics/sprites/health.png",
+	"ock":     "./graphics/sprites/ock.png",
+	"preston": "./graphics/sprites/preston.png",
 }
 
 var backgrounds map[string]*ebiten.Image = map[string]*ebiten.Image{}
 var sprites map[string]*ebiten.Image = map[string]*ebiten.Image{}
+var japanese *text.GoTextFaceSource
 
 func InitManager() (*Manager, error) {
 	for k, v := range sourceBackgrounds {
@@ -45,8 +52,17 @@ func InitManager() (*Manager, error) {
 		sprites[k] = sprite
 	}
 
+	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.MPlus1pRegular_ttf))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	japanese = s
+
 	return &Manager{
 		Sprites:     sprites,
 		Backgrounds: backgrounds,
+		Font:        japanese,
 	}, nil
 }

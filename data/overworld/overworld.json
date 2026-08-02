@@ -1,0 +1,27 @@
+{
+    "locations": [
+        {
+            "name": "Ohio",
+            "enemies": [
+                {
+                    "name": "Paulie",
+                    "sprite": "ock",
+                    "health": 100,
+                    "coordinates": {
+                        "X": 4,
+                        "Y": 4
+                    }
+                },
+                {
+                    "name": "Bozo",
+                    "sprite": "preston",
+                    "health": 100,
+                    "coordinates": {
+                        "X": 7,
+                        "Y": 7
+                    }
+                }
+            ]
+        }
+    ]
+}

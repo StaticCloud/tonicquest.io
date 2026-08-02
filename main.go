@@ -9,7 +9,7 @@ import (
 func main() {
 	game := game.Init()
 
-	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowSize(720, 480)
 	ebiten.SetWindowTitle("Tonic Quest")
 
 	if err := ebiten.RunGame(game); err != nil {
