@@ -11,8 +11,9 @@ type Data struct {
 }
 
 type Location struct {
-	Name    string  `json:"name"`
-	Enemies []Enemy `json:"enemies"`
+	Name    string     `json:"name"`
+	Map     [][]string `json:"map"`
+	Enemies []Enemy    `json:"enemies"`
 }
 
 type Enemy struct {

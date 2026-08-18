@@ -17,7 +17,7 @@ func InitPlayer() *Player {
 	}
 }
 
-func (p *Player) ReadInput() {
+func (p *Player) ReadInput(validInputs map[ebiten.Key]bool) {
 	keyBuffer := []ebiten.Key{}
 	keyBuffer = inpututil.AppendJustPressedKeys(keyBuffer)
 
@@ -26,13 +26,21 @@ func (p *Player) ReadInput() {
 
 		switch key {
 		case ebiten.KeyW:
-			p.Y -= 20
+			if validInputs[ebiten.KeyW] == true {
+				p.Y -= 20
+			}
 		case ebiten.KeyS:
-			p.Y += 20
+			if validInputs[ebiten.KeyS] == true {
+				p.Y += 20
+			}
 		case ebiten.KeyD:
-			p.X += 20
+			if validInputs[ebiten.KeyD] == true {
+				p.X += 20
+			}
 		case ebiten.KeyA:
-			p.X -= 20
+			if validInputs[ebiten.KeyA] == true {
+				p.X -= 20
+			}
 		}
 	}
 }

@@ -25,8 +25,10 @@ var sourceBackgrounds map[string]string = map[string]string{
 var sourceSprites map[string]string = map[string]string{
 	"carol":   "./graphics/sprites/carol_sprite.png",
 	"health":  "./graphics/sprites/health.png",
-	"ock":     "./graphics/sprites/ock.png",
-	"preston": "./graphics/sprites/preston.png",
+	"squelch": "./graphics/sprites/squelch.png",
+	"culo":    "./graphics/sprites/culo.png",
+	"twee":    "./graphics/sprites/tree.png",
+	"bunkus":  "./graphics/sprites/bunkus.png",
 }
 
 var backgrounds map[string]*ebiten.Image = map[string]*ebiten.Image{}
