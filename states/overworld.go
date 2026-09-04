@@ -9,6 +9,8 @@ import (
 	"tonic-quest/orchestrator"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 type Overworld struct {
@@ -20,6 +22,7 @@ type Overworld struct {
 
 func InitOverworldState(orchestrator *orchestrator.Orchestrator) *Overworld {
 	locations, err := data.LoadWorld()
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -33,15 +36,44 @@ func InitOverworldState(orchestrator *orchestrator.Orchestrator) *Overworld {
 func (s *Overworld) Run() (StateName, error) {
 	s.Player.ReadInput(s.getValidInputs())
 
+	if s.Orchestrator.Globals.Enemy != nil {
+		if s.Orchestrator.Globals.Enemy.Defeated == true {
+			s.World.Locations[0].Enemies[s.Orchestrator.Globals.Enemy.ID-1].Defeated = true
+			data.SaveWorld(s.World)
+			s.Orchestrator.Globals.Enemy = nil
+		}
+
+		s.Orchestrator.Globals.Enemy = nil
+	}
+
 	for _, enemy := range s.World.Locations[0].Enemies {
-		if enemy.Coordinates.X*20 == s.Player.X && enemy.Coordinates.Y*20 == s.Player.Y {
+		if (enemy.Coordinates.X*20 == s.Player.X && enemy.Coordinates.Y*20 == s.Player.Y) && enemy.Defeated == false {
 			s.Orchestrator.Globals.SetEnemy(&entities.Enemy{
+				ID:     enemy.ID,
 				Name:   enemy.Name,
 				Sprite: enemy.Sprite,
 				Health: 100,
-				Moves:  []string{"C", "D", "E"},
+				Moves:  enemy.Moves,
 			})
 			return GAMEPLAY, nil
+		}
+	}
+
+	for _, ally := range s.World.Locations[0].Allies {
+		if ally.Coordinates.X*20 == s.Player.X && ally.Coordinates.Y*20 == s.Player.Y {
+			keyBuffer := []ebiten.Key{}
+			keyBuffer = inpututil.AppendPressedKeys(keyBuffer)
+
+			if len(keyBuffer) > 0 {
+				if keyBuffer[0] == ebiten.KeySpace {
+					s.Orchestrator.Globals.SetAlly(&entities.Ally{
+						Name:     ally.Name,
+						Sprite:   ally.Sprite,
+						Dialogue: ally.Dialogue,
+					})
+					return DIALOGUE, nil
+				}
+			}
 		}
 	}
 
@@ -63,15 +95,33 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 	)
 
 	for _, enemy := range s.World.Locations[0].Enemies {
-		enemyOptions := &ebiten.DrawImageOptions{}
+		if enemy.Defeated == false {
+			enemyOptions := &ebiten.DrawImageOptions{}
 
-		enemyOptions.GeoM.Scale(0.2, 0.2)
-		enemyOptions.GeoM.Translate(float64(enemy.Coordinates.X)*20, float64(enemy.Coordinates.Y)*20)
+			enemyOptions.GeoM.Scale(0.2, 0.2)
+			enemyOptions.GeoM.Translate(float64(enemy.Coordinates.X)*20, float64(enemy.Coordinates.Y)*20)
+
+			screen.DrawImage(
+				s.Orchestrator.Graphics.Sprites[enemy.Sprite],
+				enemyOptions,
+			)
+		}
+	}
+
+	for _, ally := range s.World.Locations[0].Allies {
+		allyOptions := &ebiten.DrawImageOptions{}
+
+		allyOptions.GeoM.Scale(0.2, 0.2)
+		allyOptions.GeoM.Translate(float64(ally.Coordinates.X)*20, float64(ally.Coordinates.Y)*20)
 
 		screen.DrawImage(
-			s.Orchestrator.Graphics.Sprites[enemy.Sprite],
-			enemyOptions,
+			s.Orchestrator.Graphics.Sprites[ally.Sprite],
+			allyOptions,
 		)
+
+		if ally.Coordinates.X*20 == s.Player.X && ally.Coordinates.Y*20 == s.Player.Y {
+			s.renderText(screen, fmt.Sprintf("Talk to %s", ally.Name))
+		}
 	}
 }
 
@@ -117,7 +167,6 @@ func (s *Overworld) getValidInputs() map[ebiten.Key]bool {
 }
 
 func (s *Overworld) renderOverworld(screen *ebiten.Image) {
-
 	for i, _ := range s.World.Locations[0].Map {
 		for j, _ := range s.World.Locations[0].Map[i] {
 			block := s.World.Locations[0].Map[i][j]
@@ -134,4 +183,12 @@ func (s *Overworld) renderOverworld(screen *ebiten.Image) {
 			}
 		}
 	}
+}
+
+func (s *Overworld) renderText(screen *ebiten.Image, displayText string) {
+	speakerOpts := &text.DrawOptions{}
+	speakerOpts.LayoutOptions.PrimaryAlign = text.AlignCenter
+	speakerOpts.GeoM.Translate(120, 140)
+
+	text.Draw(screen, displayText, s.Orchestrator.Graphics.Font, speakerOpts)
 }

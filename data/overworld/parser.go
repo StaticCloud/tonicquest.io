@@ -14,13 +14,29 @@ type Location struct {
 	Name    string     `json:"name"`
 	Map     [][]string `json:"map"`
 	Enemies []Enemy    `json:"enemies"`
+	Allies  []Ally     `json:"allies"`
 }
 
 type Enemy struct {
+	ID          int         `json:"_id"`
 	Name        string      `json:"name"`
 	Sprite      string      `json:"sprite"`
 	Health      int         `json:"health"`
+	Moves       []string    `json:"moves"`
+	Defeated    bool        `json:"defeated"`
 	Coordinates Coordinates `json:"coordinates"`
+}
+
+type Ally struct {
+	Name        string      `json:"name"`
+	Sprite      string      `json:"sprite"`
+	Coordinates Coordinates `json:"coordinates"`
+	Dialogue    []Dialogue  `json:"dialogue"`
+}
+
+type Dialogue struct {
+	Speaker int    `json:"speaker"`
+	Text    string `json:"text"`
 }
 
 type Coordinates struct {
@@ -58,4 +74,24 @@ func LoadWorld() (*Data, error) {
 	}
 
 	return data, nil
+}
+
+func SaveWorld(data *Data) (*Data, error) {
+	file, err := os.Create("./data/overworld/overworld.json")
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	if err := encoder.Encode(data); err != nil {
+		return nil, err
+	}
+
+	newData, err := Unmarshall()
+	if err != nil {
+		return nil, err
+	}
+
+	return newData, nil
 }

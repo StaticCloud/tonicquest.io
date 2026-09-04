@@ -5,12 +5,14 @@ import (
 )
 
 type Enemy struct {
-	Name       string
-	Sprite     string
-	Moves      []string
-	Health     int
-	AttackList []string
-	timer      float64
+	ID          int
+	Name        string
+	Sprite      string
+	Moves       []string
+	Health      int
+	Defeated    bool
+	AttackList  []string
+	AttackTimer float64
 }
 
 func InitEnemy(moves []string, health int) *Enemy {
@@ -22,15 +24,15 @@ func InitEnemy(moves []string, health int) *Enemy {
 }
 
 func (e *Enemy) Attack() string {
-	e.timer += 1.0 / 60.0
+	e.AttackTimer += 1.0 / 60.0
 	attack := ""
 
-	if e.timer >= 1.0 {
+	if e.AttackTimer >= 1.0 {
 		random := rand.Intn(len(e.Moves))
 		attack = e.Moves[random]
 		e.AttackList = append(e.AttackList, attack)
 
-		e.timer = 0
+		e.AttackTimer = 0
 	}
 
 	return attack

@@ -14,7 +14,7 @@ import (
 type Manager struct {
 	Sprites     map[string]*ebiten.Image
 	Backgrounds map[string]*ebiten.Image
-	Font        *text.GoTextFaceSource
+	Font        *text.GoTextFace
 }
 
 var sourceBackgrounds map[string]string = map[string]string{
@@ -23,12 +23,13 @@ var sourceBackgrounds map[string]string = map[string]string{
 }
 
 var sourceSprites map[string]string = map[string]string{
-	"carol":   "./graphics/sprites/carol_sprite.png",
-	"health":  "./graphics/sprites/health.png",
-	"squelch": "./graphics/sprites/squelch.png",
-	"culo":    "./graphics/sprites/culo.png",
-	"twee":    "./graphics/sprites/tree.png",
-	"bunkus":  "./graphics/sprites/bunkus.png",
+	"carol":        "./graphics/sprites/carol_sprite.png",
+	"health":       "./graphics/sprites/health.png",
+	"squelch":      "./graphics/sprites/squelch.png",
+	"culo":         "./graphics/sprites/culo.png",
+	"twee":         "./graphics/sprites/tree.png",
+	"bunkus":       "./graphics/sprites/bunkus.png",
+	"michael_cera": "./graphics/sprites/michael_cera.png",
 }
 
 var backgrounds map[string]*ebiten.Image = map[string]*ebiten.Image{}
@@ -54,17 +55,20 @@ func InitManager() (*Manager, error) {
 		sprites[k] = sprite
 	}
 
-	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.MPlus1pRegular_ttf))
+	source, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.MPlus1pRegular_ttf))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	japanese = s
+	face := &text.GoTextFace{
+		Source: source,
+		Size:   11,
+	}
 
 	return &Manager{
 		Sprites:     sprites,
 		Backgrounds: backgrounds,
-		Font:        japanese,
+		Font:        face,
 	}, nil
 }

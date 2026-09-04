@@ -12,6 +12,7 @@ const (
 	NONE StateName = iota
 	SPLASH
 	GAMEPLAY
+	DIALOGUE
 	PLAYER_TURN
 	ENEMY_TURN
 	TERMINAL
@@ -34,6 +35,7 @@ func InitManager(orchestrator *orchestrator.Orchestrator) *Manager {
 			OVERWORLD: InitOverworldState(orchestrator),
 			SPLASH:    InitSplashState(orchestrator),
 			GAMEPLAY:  InitGameplayState(orchestrator),
+			DIALOGUE:  InitDialogueState(orchestrator),
 		},
 		State: SPLASH,
 	}

@@ -1,0 +1,228 @@
+{
+    "locations": [
+        {
+            "name": "Ohio",
+            "map": [
+                [
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_"
+                ],
+                [
+                    "_",
+                    "_",
+                    "_",
+                    "X",
+                    "_",
+                    "_",
+                    "_",
+                    "X",
+                    "X",
+                    "X",
+                    "_",
+                    "_"
+                ],
+                [
+                    "_",
+                    "_",
+                    "X",
+                    "X",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "X",
+                    "_",
+                    "_"
+                ],
+                [
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "X",
+                    "_",
+                    "_"
+                ],
+                [
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "X",
+                    "X",
+                    "_",
+                    "X",
+                    "_",
+                    "X",
+                    "_",
+                    "_"
+                ],
+                [
+                    "_",
+                    "_",
+                    "X",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "X",
+                    "_",
+                    "_"
+                ],
+                [
+                    "_",
+                    "_",
+                    "X",
+                    "X",
+                    "_",
+                    "_",
+                    "_",
+                    "X",
+                    "X",
+                    "X",
+                    "_",
+                    "_"
+                ],
+                [
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_",
+                    "_"
+                ]
+            ],
+            "enemies": [
+                {
+                    "_id": 1,
+                    "name": "Paulie",
+                    "sprite": "squelch",
+                    "health": 100,
+                    "moves": [
+                        "C",
+                        "D",
+                        "E"
+                    ],
+                    "defeated": true,
+                    "coordinates": {
+                        "X": 3,
+                        "Y": 4
+                    }
+                },
+                {
+                    "_id": 2,
+                    "name": "Bozo",
+                    "sprite": "culo",
+                    "health": 100,
+                    "moves": [
+                        "F",
+                        "G",
+                        "A",
+                        "B"
+                    ],
+                    "defeated": false,
+                    "coordinates": {
+                        "X": 7,
+                        "Y": 7
+                    }
+                }
+            ],
+            "allies": [
+                {
+                    "name": "Michael Cera",
+                    "sprite": "michael_cera",
+                    "coordinates": {
+                        "X": 8,
+                        "Y": 7
+                    },
+                    "dialogue": [
+                        {
+                            "speaker": 0,
+                            "text": "Hey Carol! I need your help! I'm trying to pitch a Superbad legacy sequel, but there is a big problem!"
+                        },
+                        {
+                            "speaker": 0,
+                            "text": "A demon has possessed Jonah Hill and turned him into an insecure douchenozzle."
+                        },
+                        {
+                            "speaker": 0,
+                            "text": "He was the beating heart of the original Superbad. There is simply no Superbad 2 without Jonah Hill."
+                        },
+                        {
+                            "speaker": 0,
+                            "text": "Obviously I'm referring to the Jonah Hill we all used to love, not... \"Jonah Hill.\""
+                        },
+                        {
+                            "speaker": 1,
+                            "text": "What about Christopher?"
+                        },
+                        {
+                            "speaker": 0,
+                            "text": "...who?"
+                        },
+                        {
+                            "speaker": 1,
+                            "text": "Christopher Mintz-Plasse"
+                        },
+                        {
+                            "speaker": 0,
+                            "text": "...wait ...did he play one of the cops chasing down McLovin?"
+                        },
+                        {
+                            "speaker": 1,
+                            "text": "..."
+                        },
+                        {
+                            "speaker": 1,
+                            "text": "..."
+                        },
+                        {
+                            "speaker": 1,
+                            "text": "..."
+                        },
+                        {
+                            "speaker": 1,
+                            "text": "...exactly."
+                        },
+                        {
+                            "speaker": 0,
+                            "text": "Oh no, for the sequel I'm going for extraterrestrial minor-antagonists."
+                        },
+                        {
+                            "speaker": 0,
+                            "text": "I'd tell you more but I'm under NDA!"
+                        },
+                        {
+                            "speaker": 1,
+                            "text": "I'm literally dying of anticipation right now."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

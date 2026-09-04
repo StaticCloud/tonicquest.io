@@ -66,11 +66,12 @@ func (s *Gameplay) Run() (StateName, error) {
 		s.PlayKey(key)
 
 		if s.Player.Health <= 0 {
-			s.Result = ENEMY_WINS
+			return OVERWORLD, nil
 		}
 
 		if s.Orchestrator.Globals.Enemy.Health <= 0 {
-			s.Result = PLAYER_WINS
+			s.Orchestrator.Globals.Enemy.Defeated = true
+			return OVERWORLD, nil
 		}
 	}
 
@@ -100,7 +101,7 @@ func (s *Gameplay) Draw(screen *ebiten.Image) {
 
 	enemyOptions := &ebiten.DrawImageOptions{}
 
-	enemyOptions.GeoM.Scale(0.35, 0.35)
+	enemyOptions.GeoM.Scale(1, 1)
 	enemyOptions.GeoM.Translate(150.0, 0.0)
 
 	screen.DrawImage(
@@ -118,10 +119,7 @@ func (s *Gameplay) Draw(screen *ebiten.Image) {
 		enemyHealthOptions,
 	)
 
-	if s.Result == PLAYER_WINS || s.Result == ENEMY_WINS {
-
-	}
-	// screen.DrawImage(s.Orchestrator.Graphics.Backgrounds["carol"], &ebiten.DrawImageOptions{})
+	s.DrawDot(screen)
 }
 
 func (s *Gameplay) PlayKey(key string) {
@@ -134,4 +132,18 @@ func (s *Gameplay) PlayKey(key string) {
 func (s *Gameplay) Reset() {
 	s.Orchestrator.Globals.Enemy.AttackList = []string{}
 	s.Player.AttackList = []string{}
+}
+
+func (s *Gameplay) DrawDot(screen *ebiten.Image) {
+	for i := range len(s.Orchestrator.Globals.Enemy.AttackList) {
+		attackDot := &ebiten.DrawImageOptions{}
+
+		attackDot.GeoM.Scale(1.0, 0.2)
+		attackDot.GeoM.Translate(30.0*float64(i), 0.0)
+
+		screen.DrawImage(
+			s.Orchestrator.Graphics.Sprites["health"],
+			attackDot,
+		)
+	}
 }
