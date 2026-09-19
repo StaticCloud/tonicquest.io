@@ -41,6 +41,7 @@ func InitGameplayState(orchestrator *orchestrator.Orchestrator) *Gameplay {
 }
 
 func (s *Gameplay) Run() (StateName, error) {
+	s.Orchestrator.Graphics.Update()
 	if s.Result == NO_RESULT {
 		key := ""
 
@@ -66,7 +67,9 @@ func (s *Gameplay) Run() (StateName, error) {
 		s.PlayKey(key)
 
 		if s.Player.Health <= 0 {
-			return OVERWORLD, nil
+			s.Player.Health = 100
+
+			return OVERWORLD_LOSE, nil
 		}
 
 		if s.Orchestrator.Globals.Enemy.Health <= 0 {
@@ -79,47 +82,31 @@ func (s *Gameplay) Run() (StateName, error) {
 }
 
 func (s *Gameplay) Draw(screen *ebiten.Image) {
-	playerOptions := &ebiten.DrawImageOptions{}
-
-	playerOptions.GeoM.Scale(0.1, 0.1)
-	playerOptions.GeoM.Translate(0.0, 70.0)
-
-	screen.DrawImage(
-		s.Orchestrator.Graphics.Sprites["carol"],
-		playerOptions,
-	)
-
-	playerHealthOptions := &ebiten.DrawImageOptions{}
-
-	playerHealthOptions.GeoM.Scale(0.1*float64(s.Player.Health), 0.2)
-	playerHealthOptions.GeoM.Translate(0.0, 70.0)
-
-	screen.DrawImage(
-		s.Orchestrator.Graphics.Sprites["health"],
-		playerHealthOptions,
-	)
-
-	enemyOptions := &ebiten.DrawImageOptions{}
-
-	enemyOptions.GeoM.Scale(1, 1)
-	enemyOptions.GeoM.Translate(150.0, 0.0)
-
-	screen.DrawImage(
-		s.Orchestrator.Graphics.Sprites[s.Orchestrator.Globals.Enemy.Sprite],
-		enemyOptions,
-	)
-
-	enemyHealthOptions := &ebiten.DrawImageOptions{}
-
-	enemyHealthOptions.GeoM.Scale(0.1*float64(s.Orchestrator.Globals.Enemy.Health), 0.2)
-	enemyHealthOptions.GeoM.Translate(150.0, 0.0)
-
-	screen.DrawImage(
-		s.Orchestrator.Graphics.Sprites["health"],
-		enemyHealthOptions,
-	)
+	s.drawHealth(screen, s.Player.Health, (s.Orchestrator.Globals.Screen.Width/2)-110, (s.Orchestrator.Globals.Screen.Height)-20)
+	s.drawHealth(screen, s.Orchestrator.Globals.Enemy.Health, (s.Orchestrator.Globals.Screen.Width/2)+10, (s.Orchestrator.Globals.Screen.Height)-20)
 
 	s.DrawDot(screen)
+}
+
+func (s *Gameplay) drawHealth(screen *ebiten.Image, value, x, y int) {
+	borderOptions := &ebiten.DrawImageOptions{}
+
+	borderOptions.GeoM.Translate(float64(x), float64(y))
+
+	screen.DrawImage(
+		s.Orchestrator.Graphics.Sprites["health_border"],
+		borderOptions,
+	)
+
+	healthOptions := &ebiten.DrawImageOptions{}
+
+	healthOptions.GeoM.Scale(float64(value)*0.94, 1.0)
+	healthOptions.GeoM.Translate(float64(x+3), float64(y+3))
+
+	screen.DrawImage(
+		s.Orchestrator.Graphics.Sprites["health"],
+		healthOptions,
+	)
 }
 
 func (s *Gameplay) PlayKey(key string) {
@@ -136,14 +123,6 @@ func (s *Gameplay) Reset() {
 
 func (s *Gameplay) DrawDot(screen *ebiten.Image) {
 	for i := range len(s.Orchestrator.Globals.Enemy.AttackList) {
-		attackDot := &ebiten.DrawImageOptions{}
-
-		attackDot.GeoM.Scale(1.0, 0.2)
-		attackDot.GeoM.Translate(30.0*float64(i), 0.0)
-
-		screen.DrawImage(
-			s.Orchestrator.Graphics.Sprites["health"],
-			attackDot,
-		)
+		s.Orchestrator.Graphics.DrawAnimation("note", (s.Orchestrator.Globals.Screen.Width / 2), 30+(i*35), screen)
 	}
 }

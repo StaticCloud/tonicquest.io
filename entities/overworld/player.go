@@ -44,3 +44,8 @@ func (p *Player) ReadInput(validInputs map[ebiten.Key]bool) {
 		}
 	}
 }
+
+func (p *Player) Reset() {
+	p.X = 0
+	p.Y = 0
+}

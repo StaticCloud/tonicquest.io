@@ -20,18 +20,37 @@ type Overworld struct {
 	World        *data.Data
 }
 
+type Reset struct {
+	Overworld *Overworld
+}
+
 func InitOverworldState(orchestrator *orchestrator.Orchestrator) *Overworld {
 	locations, err := data.LoadWorld()
 
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	return &Overworld{
 		Orchestrator: orchestrator,
 		Player:       overworld.InitPlayer(),
 		World:        locations,
 	}
 }
+
+func RefreshOverworldState(overworld *Overworld) *Reset {
+	return &Reset{
+		Overworld: overworld,
+	}
+}
+
+func (r *Reset) Run() (StateName, error) {
+	r.Overworld.Player.Reset()
+
+	return OVERWORLD, nil
+}
+
+func (r *Reset) Draw(screen *ebiten.Image) {}
 
 func (s *Overworld) Run() (StateName, error) {
 	s.Player.ReadInput(s.getValidInputs())
@@ -72,6 +91,19 @@ func (s *Overworld) Run() (StateName, error) {
 						Dialogue: ally.Dialogue,
 					})
 					return DIALOGUE, nil
+				}
+			}
+		}
+	}
+
+	for _, savepoint := range s.World.Locations[0].Savepoints {
+		if savepoint.Coordinates.X*20 == s.Player.X && savepoint.Coordinates.Y*20 == s.Player.Y {
+			keyBuffer := []ebiten.Key{}
+			keyBuffer = inpututil.AppendPressedKeys(keyBuffer)
+
+			if len(keyBuffer) > 0 {
+				if keyBuffer[0] == ebiten.KeySpace {
+					data.SaveWorld(s.World)
 				}
 			}
 		}
@@ -121,6 +153,21 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 
 		if ally.Coordinates.X*20 == s.Player.X && ally.Coordinates.Y*20 == s.Player.Y {
 			s.renderText(screen, fmt.Sprintf("Talk to %s", ally.Name))
+		}
+	}
+
+	for _, savepoint := range s.World.Locations[0].Savepoints {
+		allyOptions := &ebiten.DrawImageOptions{}
+
+		allyOptions.GeoM.Translate(float64(savepoint.Coordinates.X)*20, float64(savepoint.Coordinates.Y)*20)
+
+		screen.DrawImage(
+			s.Orchestrator.Graphics.Sprites["typewriter"],
+			allyOptions,
+		)
+
+		if savepoint.Coordinates.X*20 == s.Player.X && savepoint.Coordinates.Y*20 == s.Player.Y {
+			s.renderText(screen, "Save Game")
 		}
 	}
 }

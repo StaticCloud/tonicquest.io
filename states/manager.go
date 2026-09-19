@@ -17,6 +17,7 @@ const (
 	ENEMY_TURN
 	TERMINAL
 	OVERWORLD
+	OVERWORLD_LOSE
 )
 
 type State interface {
@@ -30,7 +31,7 @@ type Manager struct {
 }
 
 func InitManager(orchestrator *orchestrator.Orchestrator) *Manager {
-	return &Manager{
+	manager := &Manager{
 		States: map[StateName]State{
 			OVERWORLD: InitOverworldState(orchestrator),
 			SPLASH:    InitSplashState(orchestrator),
@@ -39,6 +40,10 @@ func InitManager(orchestrator *orchestrator.Orchestrator) *Manager {
 		},
 		State: SPLASH,
 	}
+
+	manager.States[OVERWORLD_LOSE] = RefreshOverworldState(manager.States[OVERWORLD].(*Overworld))
+
+	return manager
 }
 
 func (s *Manager) Run() error {

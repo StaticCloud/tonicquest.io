@@ -116,6 +116,15 @@
                     "_"
                 ]
             ],
+            "savepoints": [
+                {
+                    "_id": 1,
+                    "coordinates": {
+                        "X": 11,
+                        "Y": 1
+                    }
+                }
+            ],
             "enemies": [
                 {
                     "_id": 1,

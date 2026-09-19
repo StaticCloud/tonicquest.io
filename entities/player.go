@@ -35,3 +35,7 @@ func (p *Player) Attack() string {
 func (p *Player) TakeDamage(amount int) {
 	p.Health = p.Health - amount
 }
+
+func (p *Player) Reset() {
+	p.Health = 100
+}

@@ -12,6 +12,8 @@ import (
 
 type Game struct {
 	StateManager *states.Manager
+	Width        int
+	Height       int
 }
 
 func Init() *Game {
@@ -35,6 +37,8 @@ func Init() *Game {
 
 	return &Game{
 		StateManager: states.InitManager(orchestrator),
+		Width:        globals.Screen.Width,
+		Height:       globals.Screen.Height,
 	}
 }
 
@@ -51,5 +55,5 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 240, 160
+	return g.Width, g.Height
 }
