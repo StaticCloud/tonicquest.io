@@ -2,9 +2,8 @@ package states
 
 import (
 	"fmt"
-	"image/color"
 	data "tonic-quest/data/overworld"
-	"tonic-quest/entities"
+	"tonic-quest/entities/combat"
 	"tonic-quest/entities/overworld"
 	"tonic-quest/orchestrator"
 
@@ -54,6 +53,7 @@ func (r *Reset) Draw(screen *ebiten.Image) {}
 
 func (s *Overworld) Run() (StateName, error) {
 	s.Player.ReadInput(s.getValidInputs())
+	s.Orchestrator.Graphics.Update()
 
 	if s.Orchestrator.Globals.Enemy != nil {
 		if s.Orchestrator.Globals.Enemy.Defeated == true {
@@ -67,14 +67,15 @@ func (s *Overworld) Run() (StateName, error) {
 
 	for _, enemy := range s.World.Locations[0].Enemies {
 		if (enemy.Coordinates.X*20 == s.Player.X && enemy.Coordinates.Y*20 == s.Player.Y) && enemy.Defeated == false {
-			s.Orchestrator.Globals.SetEnemy(&entities.Enemy{
-				ID:     enemy.ID,
-				Name:   enemy.Name,
-				Sprite: enemy.Sprite,
-				Health: 100,
-				Moves:  enemy.Moves,
-			})
-			return GAMEPLAY, nil
+			s.Orchestrator.Globals.SetEnemy(combat.InitEnemy(
+				enemy.ID,
+				enemy.Health,
+				enemy.Name,
+				enemy.Sprite,
+				enemy.Moves,
+			))
+			s.Orchestrator.Graphics.Ticker = 0
+			return LOAD_COMBAT, nil
 		}
 	}
 
@@ -85,7 +86,7 @@ func (s *Overworld) Run() (StateName, error) {
 
 			if len(keyBuffer) > 0 {
 				if keyBuffer[0] == ebiten.KeySpace {
-					s.Orchestrator.Globals.SetAlly(&entities.Ally{
+					s.Orchestrator.Globals.SetAlly(&overworld.Ally{
 						Name:     ally.Name,
 						Sprite:   ally.Sprite,
 						Dialogue: ally.Dialogue,
@@ -114,17 +115,16 @@ func (s *Overworld) Run() (StateName, error) {
 
 func (s *Overworld) Draw(screen *ebiten.Image) {
 	s.renderOverworld(screen)
-	playerOptions := &ebiten.DrawImageOptions{}
+	// playerOptions := &ebiten.DrawImageOptions{}
 
-	playerOptions.GeoM.Translate(float64(s.Player.X), float64(s.Player.Y))
+	// playerOptions.GeoM.Translate(float64(s.Player.X), float64(s.Player.Y))
 
-	image := ebiten.NewImage(20, 20)
-	image.Fill(color.White)
+	// screen.DrawImage(
+	// 	s.Orchestrator.Graphics.Sprites["bunkus"],
+	// 	playerOptions,
+	// )
 
-	screen.DrawImage(
-		s.Orchestrator.Graphics.Sprites["bunkus"],
-		playerOptions,
-	)
+	s.Orchestrator.Graphics.DrawAnimation("carol_overworld", s.Player.X, s.Player.Y, screen, 1.0)
 
 	for _, enemy := range s.World.Locations[0].Enemies {
 		if enemy.Defeated == false {

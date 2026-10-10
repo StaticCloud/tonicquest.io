@@ -5,6 +5,7 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -31,7 +32,6 @@ type Animation struct {
 
 var sourceBackgrounds map[string]string = map[string]string{
 	"splash": "./graphics/sprites/splash.png",
-	"carol":  "./graphics/sprites/carol.png",
 }
 
 var sourceSprites map[string]string = map[string]string{
@@ -39,15 +39,19 @@ var sourceSprites map[string]string = map[string]string{
 	"health":        "./graphics/sprites/combat/health.png",
 	"health_border": "./graphics/sprites/combat/health-border.png",
 	"squelch":       "./graphics/sprites/squelch.png",
-	"culo":          "./graphics/sprites/culo.png",
+	"culo":          "./graphics/sprites/carol.png",
 	"twee":          "./graphics/sprites/tree.png",
 	"bunkus":        "./graphics/sprites/bunkus.png",
 	"michael_cera":  "./graphics/sprites/michael_cera.png",
 	"typewriter":    "./graphics/sprites/typewriter.png",
+	"note":          "./graphics/sprites/note.png",
+	"note_correct":  "./graphics/sprites/note_correct.png",
 }
 
 var animatedSprites map[string]*Animation = map[string]*Animation{
-	"note": InitAnimation("./graphics/sprites/note_indicator.png", 20, 20, 5),
+	"carol_overworld": InitAnimation("./graphics/sprites/bunkus.png", 20, 20, 5),
+	"carol_idle":      InitAnimation("./graphics/sprites/combat/carol_idle.png", 120, 120, 2),
+	"culo_idle":       InitAnimation("./graphics/sprites/combat/culo_idle.png", 120, 120, 2),
 }
 
 var backgrounds map[string]*ebiten.Image = map[string]*ebiten.Image{}
@@ -109,12 +113,12 @@ func (m *Manager) Update() error {
 	return nil
 }
 
-func (m *Manager) DrawAnimation(sprite string, x, y int, screen *ebiten.Image) {
+func (m *Manager) DrawAnimation(sprite string, x, y int, screen *ebiten.Image, speed float64) {
 	animation := animatedSprites[sprite]
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(-float64(animation.FrameWidth)/2, -float64(animation.FrameHeight)/2)
 	op.GeoM.Translate(float64(x), float64(y))
-	i := (m.Ticker / 5) % animation.FrameCount
+	tempo := int(math.Floor(float64(m.Ticker) * speed))
+	i := (tempo / 5) % animation.FrameCount
 	sx, sy := animation.Frame0X+i*animation.FrameWidth, animation.Frame0Y
 	screen.DrawImage(animation.SpriteSheet.SubImage(image.Rect(sx, sy, sx+animation.FrameWidth, sy+animation.FrameHeight)).(*ebiten.Image), op)
 }

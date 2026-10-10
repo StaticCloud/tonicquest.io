@@ -11,13 +11,14 @@ type StateName int
 const (
 	NONE StateName = iota
 	SPLASH
-	GAMEPLAY
+	COMBAT
 	DIALOGUE
 	PLAYER_TURN
 	ENEMY_TURN
 	TERMINAL
 	OVERWORLD
 	OVERWORLD_LOSE
+	LOAD_COMBAT
 )
 
 type State interface {
@@ -35,13 +36,14 @@ func InitManager(orchestrator *orchestrator.Orchestrator) *Manager {
 		States: map[StateName]State{
 			OVERWORLD: InitOverworldState(orchestrator),
 			SPLASH:    InitSplashState(orchestrator),
-			GAMEPLAY:  InitGameplayState(orchestrator),
+			COMBAT:    InitGameplayState(orchestrator),
 			DIALOGUE:  InitDialogueState(orchestrator),
 		},
 		State: SPLASH,
 	}
 
 	manager.States[OVERWORLD_LOSE] = RefreshOverworldState(manager.States[OVERWORLD].(*Overworld))
+	manager.States[LOAD_COMBAT] = RefreshCombatState(manager.States[COMBAT].(*Gameplay))
 
 	return manager
 }

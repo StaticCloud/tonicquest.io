@@ -12,8 +12,8 @@ type Player struct {
 
 func InitPlayer() *Player {
 	return &Player{
-		X: 0,
-		Y: 0,
+		X: 20,
+		Y: 20,
 	}
 }
 
@@ -46,6 +46,6 @@ func (p *Player) ReadInput(validInputs map[ebiten.Key]bool) {
 }
 
 func (p *Player) Reset() {
-	p.X = 0
-	p.Y = 0
+	p.X = 20
+	p.Y = 20
 }

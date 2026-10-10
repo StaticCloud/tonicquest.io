@@ -1,4 +1,4 @@
-package entities
+package overworld
 
 import data "tonic-quest/data/overworld"
 

@@ -1,6 +1,9 @@
 package globals
 
-import "tonic-quest/entities"
+import (
+	"tonic-quest/entities/combat"
+	"tonic-quest/entities/overworld"
+)
 
 type Screen struct {
 	Width  int
@@ -8,8 +11,8 @@ type Screen struct {
 }
 
 type Globals struct {
-	Enemy  *entities.Enemy
-	Ally   *entities.Ally
+	Enemy  *combat.Enemy
+	Ally   *overworld.Ally
 	Screen Screen
 }
 
@@ -22,18 +25,18 @@ func InitGlobals() (*Globals, error) {
 	}, nil
 }
 
-func (g *Globals) SetEnemy(enemy *entities.Enemy) {
+func (g *Globals) SetEnemy(enemy *combat.Enemy) {
 	g.Enemy = enemy
 }
 
-func (g *Globals) GetEnemy() *entities.Enemy {
+func (g *Globals) GetEnemy() *combat.Enemy {
 	return g.Enemy
 }
 
-func (g *Globals) SetAlly(ally *entities.Ally) {
+func (g *Globals) SetAlly(ally *overworld.Ally) {
 	g.Ally = ally
 }
 
-func (g *Globals) GetAlly() *entities.Ally {
+func (g *Globals) GetAlly() *overworld.Ally {
 	return g.Ally
 }
