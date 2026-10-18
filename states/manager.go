@@ -7,6 +7,7 @@ import (
 )
 
 type StateName int
+type SubState int
 
 const (
 	NONE StateName = iota
@@ -19,6 +20,11 @@ const (
 	OVERWORLD
 	OVERWORLD_LOSE
 	LOAD_COMBAT
+)
+
+const (
+	STATE SubState = iota
+	TRANSITION_OUT
 )
 
 type State interface {

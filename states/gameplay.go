@@ -8,6 +8,7 @@ import (
 	"tonic-quest/orchestrator"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 var flatKeys map[ebiten.Key]string = map[ebiten.Key]string{
@@ -32,6 +33,7 @@ type Gameplay struct {
 	Orchestrator *orchestrator.Orchestrator
 	Player       *combat.Player
 	Enemy        *combat.Enemy
+	Background   *combat.Background
 	Result       Result
 	Timer        *utils.Timer
 }
@@ -44,6 +46,7 @@ func InitGameplayState(orchestrator *orchestrator.Orchestrator) *Gameplay {
 	return &Gameplay{
 		Orchestrator: orchestrator,
 		Player:       combat.InitPlayer(flatKeys, 100),
+		Background:   combat.InitBackground(),
 		Result:       NO_RESULT,
 		Timer:        utils.InitTimer(),
 	}
@@ -67,8 +70,8 @@ func (s *Gameplay) Run() (StateName, error) {
 	s.Timer.Update()
 	s.Player.Update()
 	s.Enemy.Update()
-	s.Player.Health.Entrance(20, 0.3, s.Orchestrator.Globals.Screen.Height, 1)
-	s.Enemy.Health.Entrance(20, 0.3, s.Orchestrator.Globals.Screen.Height, 1)
+	s.Background.Update()
+	// s.Player.Health.Entrance(20, 0.3, s.Orchestrator.Globals.Screen.Height, 1)
 
 	if s.Result == NO_RESULT {
 		key := ""
@@ -115,27 +118,30 @@ func (s *Gameplay) Run() (StateName, error) {
 }
 
 func (s *Gameplay) Draw(screen *ebiten.Image) {
-	s.DrawHealth(screen, s.Player.Health.Value, (s.Orchestrator.Globals.Screen.Width/2)-110, s.Player.Health.Coords.Y)
-	s.DrawHealth(screen, s.Enemy.Health.Value, (s.Orchestrator.Globals.Screen.Width/2)+10, s.Enemy.Health.Coords.Y)
+	s.DrawBackground(screen)
+	s.DrawPlayerHud(screen)
+	s.DrawEnemyHud(screen)
 
 	s.DrawDot(screen)
 	s.DrawCarol(screen)
 	s.DrawEnemy(screen)
 }
 
-func (s *Gameplay) DrawHealth(screen *ebiten.Image, value, x, y int) {
+func (s *Gameplay) DrawHealth(screen *ebiten.Image, border string, value, x, y int) {
 	borderOptions := &ebiten.DrawImageOptions{}
 
 	borderOptions.GeoM.Translate(float64(x), float64(y))
 
+	borderImg := s.Orchestrator.Graphics.Sprites[border]
+
 	screen.DrawImage(
-		s.Orchestrator.Graphics.Sprites["health_border"],
+		s.Orchestrator.Graphics.Sprites[border],
 		borderOptions,
 	)
 
 	healthOptions := &ebiten.DrawImageOptions{}
 
-	healthOptions.GeoM.Scale(float64(value)*0.94, 1.0)
+	healthOptions.GeoM.Scale((float64(borderImg.Bounds().Dx())-6)*(float64(value)/100), 0.35)
 	healthOptions.GeoM.Translate(float64(x+3), float64(y+3))
 
 	screen.DrawImage(
@@ -161,7 +167,7 @@ func (s *Gameplay) DrawDot(screen *ebiten.Image) {
 	for i := range len(s.Orchestrator.Globals.Enemy.AttackList) {
 		opts := &ebiten.DrawImageOptions{}
 
-		opts.GeoM.Translate(float64((s.Orchestrator.Globals.Screen.Width/2)-10), float64(10+(i*35)))
+		opts.GeoM.Translate(float64((s.Orchestrator.Globals.Screen.Width/2)-10), float64(30+(i*35)))
 
 		screen.DrawImage(
 			s.Orchestrator.Graphics.Sprites["note"],
@@ -172,7 +178,7 @@ func (s *Gameplay) DrawDot(screen *ebiten.Image) {
 	for i := range len(s.Player.AttackList) {
 		opts := &ebiten.DrawImageOptions{}
 
-		opts.GeoM.Translate(float64((s.Orchestrator.Globals.Screen.Width/2)-10), float64(10+(i*35)))
+		opts.GeoM.Translate(float64((s.Orchestrator.Globals.Screen.Width/2)-10), float64(30+(i*35)))
 
 		screen.DrawImage(
 			s.Orchestrator.Graphics.Sprites["note_correct"],
@@ -190,9 +196,36 @@ func (s *Gameplay) CalculateSin(amp, freq float64, offset, limit, ticker int) fl
 }
 
 func (s *Gameplay) DrawCarol(screen *ebiten.Image) {
-	s.Orchestrator.Graphics.DrawAnimation("carol_idle", s.Player.Coords.X, 10, screen, 0.2)
+	s.Orchestrator.Graphics.DrawAnimation("carol_idle", s.Player.Coords.X, s.Player.Coords.Y, screen, 0.2)
 }
 
 func (s *Gameplay) DrawEnemy(screen *ebiten.Image) {
-	s.Orchestrator.Graphics.DrawAnimation(fmt.Sprintf("%s_idle", s.Enemy.Sprite), s.Enemy.Coords.X, 10, screen, 0.2)
+	s.Orchestrator.Graphics.DrawAnimation(fmt.Sprintf("%s_idle", s.Enemy.Sprite), s.Enemy.Coords.X, s.Player.Coords.Y, screen, 0.2)
+}
+
+func (s *Gameplay) DrawBackground(screen *ebiten.Image) {
+	opts := &ebiten.DrawImageOptions{}
+
+	opts.GeoM.Translate(float64(s.Background.Coords.X), float64(s.Background.Coords.Y))
+
+	screen.DrawImage(
+		s.Orchestrator.Graphics.Sprites["background"],
+		opts,
+	)
+}
+
+func (s *Gameplay) DrawPlayerHud(screen *ebiten.Image) {
+	s.DrawHealth(screen, "health_border", s.Player.Health.Value, s.Player.Health.Coords.X, s.Player.Health.Coords.Y)
+
+	options := &text.DrawOptions{}
+	options.GeoM.Translate(5, float64(s.Player.Health.Coords.Y)+1)
+	text.Draw(screen, "HP", s.Orchestrator.Graphics.Font, options)
+}
+
+func (s *Gameplay) DrawEnemyHud(screen *ebiten.Image) {
+	s.DrawHealth(screen, "health_enemy_border", s.Enemy.Health.Value, s.Enemy.Health.Coords.X, s.Enemy.Health.Coords.Y)
+
+	options := &text.DrawOptions{}
+	options.GeoM.Translate(4, float64(s.Enemy.Health.Coords.Y)-8)
+	text.Draw(screen, s.Enemy.Name, s.Orchestrator.Graphics.Font, options)
 }

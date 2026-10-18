@@ -144,7 +144,7 @@
                 },
                 {
                     "_id": 2,
-                    "name": "Bozo",
+                    "name": "Culo",
                     "sprite": "culo",
                     "health": 100,
                     "moves": [
@@ -162,7 +162,7 @@
             ],
             "allies": [
                 {
-                    "name": "Michael Cera",
+                    "name": "",
                     "sprite": "michael_cera",
                     "coordinates": {
                         "X": 8,
@@ -170,63 +170,111 @@
                     },
                     "dialogue": [
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "Hey Carol! I need your help! I'm trying to pitch a Superbad legacy sequel, but there is a big problem!"
                         },
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "A demon has possessed Jonah Hill and turned him into an insecure douchenozzle."
                         },
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "He was the beating heart of the original Superbad. There is simply no Superbad 2 without Jonah Hill."
                         },
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "Obviously I'm referring to the Jonah Hill we all used to love, not... \"Jonah Hill.\""
                         },
                         {
-                            "speaker": 1,
+                            "speaker": {
+                                "name": "Carol",
+                                "sprite": "carol_neutral"
+                            },
                             "text": "What about Christopher?"
                         },
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "...who?"
                         },
                         {
-                            "speaker": 1,
+                            "speaker": {
+                                "name": "Carol",
+                                "sprite": "carol_neutral"
+                            },
                             "text": "Christopher Mintz-Plasse"
                         },
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "...wait ...did he play one of the cops chasing down McLovin?"
                         },
                         {
-                            "speaker": 1,
-                            "text": "..."
+                            "speaker": {
+                                "name": "Carol",
+                                "sprite": "carol_neutral"
+                            },
+                            "text": "...",
+                            "pause": true
                         },
                         {
-                            "speaker": 1,
-                            "text": "..."
+                            "speaker": {
+                                "name": "Carol",
+                                "sprite": "carol_neutral"
+                            },
+                            "text": "...",
+                            "pause": true
                         },
                         {
-                            "speaker": 1,
-                            "text": "..."
+                            "speaker": {
+                                "name": "Carol",
+                                "sprite": "carol_neutral"
+                            },
+                            "text": "...",
+                            "pause": true
                         },
                         {
-                            "speaker": 1,
+                            "speaker": {
+                                "name": "Carol",
+                                "sprite": "carol_neutral"
+                            },
                             "text": "...exactly."
                         },
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "Oh no, for the sequel I'm going for extraterrestrial minor-antagonists."
                         },
                         {
-                            "speaker": 0,
+                            "speaker": {
+                                "name": "Michael Cera",
+                                "sprite": "michael_cera_neutral"
+                            },
                             "text": "I'd tell you more but I'm under NDA!"
                         },
                         {
-                            "speaker": 1,
+                            "speaker": {
+                                "name": "Carol",
+                                "sprite": "carol_neutral"
+                            },
                             "text": "I'm literally dying of anticipation right now."
                         }
                     ]

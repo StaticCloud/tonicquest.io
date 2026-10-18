@@ -1,7 +1,6 @@
 package combat
 
 import (
-	"math"
 	"tonic-quest/entities/utils"
 )
 
@@ -17,11 +16,14 @@ type Health struct {
 	AnimationManager *utils.AnimationManager
 }
 
-func InitHealth(health int) *Health {
+func InitHealth(health, x, y int) *Health {
 	return &Health{
-		Initial:          health,
-		Value:            health,
-		Coords:           &Coords{},
+		Initial: health,
+		Value:   health,
+		Coords: &Coords{
+			X: x,
+			Y: y,
+		},
 		AnimationManager: utils.InitAnimationManager(),
 	}
 }
@@ -45,11 +47,6 @@ func (h *Health) SetY(y int) {
 	h.Coords.Y = y
 }
 
-func (h *Health) Entrance(amp, speed float64, offset, limit int) {
-	sin := int((h.AnimationManager.Calculate(math.Sin, amp, speed, offset, limit)))
-	if sin != 140 {
-		h.SetY(sin)
-	} else {
-		h.AnimationManager.Pause = true
-	}
+func (h *Health) SetX(x int) {
+	h.Coords.X = x
 }

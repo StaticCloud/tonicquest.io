@@ -13,7 +13,7 @@ type Enemy struct {
 	Moves            []string
 	Health           *Health
 	Coords           *Coords
-	Substate         SUBSTATE
+	Substate         SubState
 	AnimationManager *utils.AnimationManager
 	Defeated         bool
 	AttackList       []string
@@ -27,9 +27,10 @@ func InitEnemy(ID, health int, name, sprite string, moves []string) *Enemy {
 		Sprite:     sprite,
 		Moves:      moves,
 		AttackList: []string{},
-		Health:     InitHealth(health),
+		Health:     InitHealth(health, 3, -12),
 		Coords: &Coords{
-			X: 0,
+			X: 360,
+			Y: 25,
 		},
 		AnimationManager: utils.InitAnimationManager(),
 	}
@@ -75,13 +76,7 @@ func (e *Enemy) SetX(x int) {
 
 func (e *Enemy) Animate() {
 	if e.Substate == ENTERING {
-		sin := int((e.AnimationManager.Calculate(math.Sin, 120, -0.08, 240, 0)))
-
-		if sin != 120 {
-			e.SetX(sin)
-		} else {
-			e.AnimationManager.Pause = true
-		}
+		e.Entrance()
 	}
 
 	if e.Substate == TAKE_DAMAGE {
@@ -96,5 +91,19 @@ func (e *Enemy) Animate() {
 
 	if e.Substate == IN_COMBAT {
 		e.SetX(120)
+	}
+}
+
+func (e *Enemy) Entrance() {
+	enemyX := int((e.AnimationManager.Calculate(math.Sin, 240, -0.05, 360, 1)))
+	healthY := int((e.Health.AnimationManager.Calculate(math.Sin, 24, 0.05, -12, 1)))
+
+	if enemyX != 120 {
+		e.SetX(enemyX)
+		e.Health.SetY(healthY)
+	} else {
+		e.Substate = IN_COMBAT
+		e.AnimationManager.Pause = true
+		e.Health.AnimationManager.Pause = true
 	}
 }

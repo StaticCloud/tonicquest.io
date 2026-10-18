@@ -5,6 +5,7 @@ import (
 	data "tonic-quest/data/overworld"
 	"tonic-quest/entities/combat"
 	"tonic-quest/entities/overworld"
+	"tonic-quest/entities/utils"
 	"tonic-quest/orchestrator"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -17,6 +18,9 @@ type Overworld struct {
 	Player       *overworld.Player
 	Enemies      []*overworld.Enemy
 	World        *data.Data
+	Ticker       *utils.Timer
+	SubState     SubState
+	Swipe        *overworld.Swipe
 }
 
 type Reset struct {
@@ -34,6 +38,9 @@ func InitOverworldState(orchestrator *orchestrator.Orchestrator) *Overworld {
 		Orchestrator: orchestrator,
 		Player:       overworld.InitPlayer(),
 		World:        locations,
+		Ticker:       utils.InitTimer(),
+		SubState:     STATE,
+		Swipe:        overworld.InitSwipe(),
 	}
 }
 
@@ -52,7 +59,16 @@ func (r *Reset) Run() (StateName, error) {
 func (r *Reset) Draw(screen *ebiten.Image) {}
 
 func (s *Overworld) Run() (StateName, error) {
-	s.Player.ReadInput(s.getValidInputs())
+	if s.SubState == STATE {
+		s.Player.ReadInput(s.getValidInputs())
+	}
+
+	if s.SubState == TRANSITION_OUT {
+		s.Ticker.Update()
+		s.Swipe.Update()
+		s.Swipe.Start()
+	}
+
 	s.Orchestrator.Graphics.Update()
 
 	if s.Orchestrator.Globals.Enemy != nil {
@@ -75,7 +91,11 @@ func (s *Overworld) Run() (StateName, error) {
 				enemy.Moves,
 			))
 			s.Orchestrator.Graphics.Ticker = 0
-			return LOAD_COMBAT, nil
+			s.SubState = TRANSITION_OUT
+
+			if s.Ticker.Tick == 20 {
+				return LOAD_COMBAT, nil
+			}
 		}
 	}
 
@@ -130,11 +150,10 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 		if enemy.Defeated == false {
 			enemyOptions := &ebiten.DrawImageOptions{}
 
-			enemyOptions.GeoM.Scale(0.2, 0.2)
 			enemyOptions.GeoM.Translate(float64(enemy.Coordinates.X)*20, float64(enemy.Coordinates.Y)*20)
 
 			screen.DrawImage(
-				s.Orchestrator.Graphics.Sprites[enemy.Sprite],
+				s.Orchestrator.Graphics.Sprites[fmt.Sprintf("%s_overworld", enemy.Sprite)],
 				enemyOptions,
 			)
 		}
@@ -170,6 +189,14 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 			s.renderText(screen, "Save Game")
 		}
 	}
+
+	swipeOptions := &ebiten.DrawImageOptions{}
+	swipeOptions.GeoM.Translate(float64(s.Swipe.X), 0)
+
+	screen.DrawImage(
+		s.Orchestrator.Graphics.Sprites["swipe"],
+		swipeOptions,
+	)
 }
 
 func (s *Overworld) getValidInputs() map[ebiten.Key]bool {
@@ -224,7 +251,7 @@ func (s *Overworld) renderOverworld(screen *ebiten.Image) {
 				blockade.GeoM.Translate(float64(j)*20, float64(i)*20)
 
 				screen.DrawImage(
-					s.Orchestrator.Graphics.Sprites["twee"],
+					s.Orchestrator.Graphics.Sprites["wall"],
 					blockade,
 				)
 			}

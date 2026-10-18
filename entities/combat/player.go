@@ -8,10 +8,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type SUBSTATE int
+type SubState int
 
 const (
-	ENTERING = iota
+	ENTERING SubState = iota
 	IN_COMBAT
 	TAKE_DAMAGE
 )
@@ -22,7 +22,7 @@ type Player struct {
 	AttackList       []string
 	Health           *Health
 	Coords           *Coords
-	Substate         SUBSTATE
+	Substate         SubState
 	AnimationManager *utils.AnimationManager
 }
 
@@ -30,9 +30,10 @@ func InitPlayer(keys map[ebiten.Key]string, health int) *Player {
 	return &Player{
 		Keys:       keys,
 		AttackList: []string{},
-		Health:     InitHealth(health),
+		Health:     InitHealth(health, 25, 160),
 		Coords: &Coords{
-			X: -120,
+			X: 240,
+			Y: 25,
 		},
 		Substate:         ENTERING,
 		AnimationManager: utils.InitAnimationManager(),
@@ -76,13 +77,7 @@ func (p *Player) SetX(x int) {
 
 func (p *Player) Animate() {
 	if p.Substate == ENTERING {
-		sin := int((p.AnimationManager.Calculate(math.Sin, 120, 0.08, -120, 1)))
-		if sin != 0 {
-			p.SetX(sin)
-		} else {
-			p.Substate = IN_COMBAT
-			p.AnimationManager.Pause = true
-		}
+		p.Entrance()
 	}
 
 	if p.Substate == TAKE_DAMAGE {
@@ -97,5 +92,19 @@ func (p *Player) Animate() {
 
 	if p.Substate == IN_COMBAT {
 		p.SetX(0)
+	}
+}
+
+func (p *Player) Entrance() {
+	playerX := int((p.AnimationManager.Calculate(math.Sin, 240, -0.05, 240, 1)))
+	healthY := int((p.Health.AnimationManager.Calculate(math.Sin, 12, -0.05, 160, 1)))
+
+	if playerX != 0 {
+		p.SetX(playerX)
+		p.Health.SetY(healthY)
+	} else {
+		p.Substate = IN_COMBAT
+		p.AnimationManager.Pause = true
+		p.Health.AnimationManager.Pause = true
 	}
 }

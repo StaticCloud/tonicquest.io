@@ -41,8 +41,12 @@ type Savepoint struct {
 }
 
 type Dialogue struct {
-	Speaker int    `json:"speaker"`
-	Text    string `json:"text"`
+	Speaker struct {
+		Name   string `json:"name"`
+		Sprite string `json:"sprite"`
+	} `json:"speaker"`
+	Text  string `json:"text"`
+	Pause bool   `json:"pause,omitempty"`
 }
 
 type Coordinates struct {
