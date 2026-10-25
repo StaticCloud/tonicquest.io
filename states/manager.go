@@ -13,18 +13,12 @@ const (
 	NONE StateName = iota
 	SPLASH
 	COMBAT
-	DIALOGUE
 	PLAYER_TURN
 	ENEMY_TURN
 	TERMINAL
 	OVERWORLD
 	OVERWORLD_LOSE
 	LOAD_COMBAT
-)
-
-const (
-	STATE SubState = iota
-	TRANSITION_OUT
 )
 
 type State interface {
@@ -43,7 +37,6 @@ func InitManager(orchestrator *orchestrator.Orchestrator) *Manager {
 			OVERWORLD: InitOverworldState(orchestrator),
 			SPLASH:    InitSplashState(orchestrator),
 			COMBAT:    InitGameplayState(orchestrator),
-			DIALOGUE:  InitDialogueState(orchestrator),
 		},
 		State: SPLASH,
 	}

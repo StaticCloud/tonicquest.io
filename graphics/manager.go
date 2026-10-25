@@ -51,19 +51,20 @@ var sourceSprites map[string]string = map[string]string{
 	"swipe":               "./graphics/sprites/swipe.png",
 	"background":          "./graphics/sprites/combat/background.png",
 	"culo_overworld":      "./graphics/sprites/overworld/culo.png",
+	"dialogue_background": "./graphics/sprites/dialogue/text_background.png",
+	"dialogue_backdrop":   "./graphics/sprites/dialogue/backdrop.png",
 }
 
 var animatedSprites map[string]*Animation = map[string]*Animation{
 	"carol_overworld":      InitAnimation("./graphics/sprites/bunkus.png", 20, 20, 5),
 	"carol_idle":           InitAnimation("./graphics/sprites/combat/carol_idle.png", 120, 120, 2),
 	"culo_idle":            InitAnimation("./graphics/sprites/combat/culo_idle.png", 120, 120, 2),
-	"carol_neutral":        InitAnimation("./graphics/sprites/dialogue/carol_neutral.png", 80, 80, 2),
-	"michael_cera_neutral": InitAnimation("./graphics/sprites/dialogue/michael_cera_neutral.png", 80, 80, 2),
+	"carol_neutral":        InitAnimation("./graphics/sprites/dialogue/carol_neutral.png", 40, 40, 2),
+	"michael_cera_neutral": InitAnimation("./graphics/sprites/dialogue/michael_cera.png", 40, 40, 2),
 }
 
 var backgrounds map[string]*ebiten.Image = map[string]*ebiten.Image{}
 var sprites map[string]*ebiten.Image = map[string]*ebiten.Image{}
-var japanese *text.GoTextFaceSource
 
 func InitManager() (*Manager, error) {
 	for k, v := range sourceBackgrounds {
@@ -84,14 +85,14 @@ func InitManager() (*Manager, error) {
 		sprites[k] = sprite
 	}
 
-	stairsNSlabs, err := os.Open("./graphics/fonts/stairsnslabs.ttf")
+	alagard, err := os.Open("./graphics/fonts/alagard.ttf")
 	if err != nil {
 		return nil, err
 	}
 
-	defer stairsNSlabs.Close()
+	defer alagard.Close()
 
-	byteValue, byteError := io.ReadAll(stairsNSlabs)
+	byteValue, byteError := io.ReadAll(alagard)
 	if byteError != nil {
 		return nil, byteError
 	}
@@ -104,7 +105,7 @@ func InitManager() (*Manager, error) {
 
 	face := &text.GoTextFace{
 		Source:    source,
-		Size:      6,
+		Size:      16,
 		Direction: text.DirectionLeftToRight,
 	}
 

@@ -2,6 +2,7 @@ package states
 
 import (
 	"fmt"
+	"math"
 	data "tonic-quest/data/overworld"
 	"tonic-quest/entities/combat"
 	"tonic-quest/entities/overworld"
@@ -13,14 +14,24 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
+type Event int
+
+const (
+	DEFAULT Event = iota
+	DIALOGUE
+	TRANSITION_OUT
+)
+
 type Overworld struct {
 	Orchestrator *orchestrator.Orchestrator
 	Player       *overworld.Player
 	Enemies      []*overworld.Enemy
 	World        *data.Data
 	Ticker       *utils.Timer
-	SubState     SubState
+	Event        Event
 	Swipe        *overworld.Swipe
+	Events       map[Event]func()
+	Dialogue     *overworld.Dialogue
 }
 
 type Reset struct {
@@ -34,14 +45,23 @@ func InitOverworldState(orchestrator *orchestrator.Orchestrator) *Overworld {
 		fmt.Println(err)
 	}
 
-	return &Overworld{
+	overworld := &Overworld{
 		Orchestrator: orchestrator,
 		Player:       overworld.InitPlayer(),
 		World:        locations,
 		Ticker:       utils.InitTimer(),
-		SubState:     STATE,
+		Event:        DEFAULT,
 		Swipe:        overworld.InitSwipe(),
+		Dialogue:     overworld.InitDialogue(),
 	}
+
+	overworld.Events = map[Event]func(){
+		DEFAULT:        overworld.Overworld,
+		TRANSITION_OUT: overworld.TransitionOut,
+		DIALOGUE:       overworld.DialogueActive,
+	}
+
+	return overworld
 }
 
 func RefreshOverworldState(overworld *Overworld) *Reset {
@@ -59,17 +79,12 @@ func (r *Reset) Run() (StateName, error) {
 func (r *Reset) Draw(screen *ebiten.Image) {}
 
 func (s *Overworld) Run() (StateName, error) {
-	if s.SubState == STATE {
-		s.Player.ReadInput(s.getValidInputs())
-	}
-
-	if s.SubState == TRANSITION_OUT {
-		s.Ticker.Update()
-		s.Swipe.Update()
-		s.Swipe.Start()
-	}
+	s.Events[s.Event]()
 
 	s.Orchestrator.Graphics.Update()
+	if s.Event == DIALOGUE {
+		s.Dialogue.Update()
+	}
 
 	if s.Orchestrator.Globals.Enemy != nil {
 		if s.Orchestrator.Globals.Enemy.Defeated == true {
@@ -91,7 +106,7 @@ func (s *Overworld) Run() (StateName, error) {
 				enemy.Moves,
 			))
 			s.Orchestrator.Graphics.Ticker = 0
-			s.SubState = TRANSITION_OUT
+			s.Event = TRANSITION_OUT
 
 			if s.Ticker.Tick == 20 {
 				return LOAD_COMBAT, nil
@@ -111,7 +126,7 @@ func (s *Overworld) Run() (StateName, error) {
 						Sprite:   ally.Sprite,
 						Dialogue: ally.Dialogue,
 					})
-					return DIALOGUE, nil
+					s.SetEvent(DIALOGUE)
 				}
 			}
 		}
@@ -197,6 +212,97 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 		s.Orchestrator.Graphics.Sprites["swipe"],
 		swipeOptions,
 	)
+
+	if s.Event == DIALOGUE {
+		dialogueBackdrop := &ebiten.DrawImageOptions{}
+
+		dialogueBackdrop.GeoM.Translate(float64(s.Dialogue.Coords.X), 0)
+
+		screen.DrawImage(
+			s.Orchestrator.Graphics.Sprites["dialogue_backdrop"],
+			dialogueBackdrop,
+		)
+
+		dialogueBackground := &ebiten.DrawImageOptions{}
+
+		dialogueBackground.GeoM.Translate(float64(s.Dialogue.Coords.X), 0)
+
+		screen.DrawImage(
+			s.Orchestrator.Graphics.Sprites["dialogue_background"],
+			dialogueBackground,
+		)
+
+		ally := s.Orchestrator.Globals.Ally
+
+		current := ally.Dialogue[s.Dialogue.Index]
+
+		options := &text.DrawOptions{}
+		options.GeoM.Translate(float64(s.Dialogue.Coords.X)+10, 55)
+		options.LineSpacing = 11 * 1.5
+
+		s.Orchestrator.Graphics.DrawAnimation(current.Speaker.Sprite, s.Dialogue.Coords.X+10, 10, screen, float64(s.Dialogue.Speed))
+		text.Draw(screen, s.Dialogue.Dialogue, s.Orchestrator.Graphics.Font, options)
+	}
+}
+
+func (s *Overworld) SetEvent(event Event) {
+	s.Event = event
+}
+
+func (s *Overworld) Overworld() {
+	s.Player.ReadInput(s.getValidInputs())
+}
+
+func (s *Overworld) TransitionOut() {
+	s.Ticker.Update()
+	s.Swipe.Update()
+	s.Swipe.Start()
+}
+
+func (s *Overworld) DialogueActive() {
+	ally := s.Orchestrator.Globals.Ally
+
+	if s.Dialogue.Index+1 == len(ally.Dialogue) && s.Dialogue.IsInactive() {
+		s.Event = DEFAULT
+	}
+
+	if s.Dialogue.Index == 0 && s.Dialogue.IsInactive() {
+		s.Dialogue.InvokeEntrance()
+	}
+
+	if s.Dialogue.Index < len(ally.Dialogue) {
+		current := ally.Dialogue[s.Dialogue.Index]
+		dialogue := current.Text
+
+		if current.Pause == true {
+			s.Dialogue.Speed = 0
+		}
+
+		if s.Dialogue.Char < len(dialogue) {
+			s.Dialogue.Dialogue += string(dialogue[s.Dialogue.Char])
+			if s.Dialogue.Column >= 20 && string(dialogue[s.Dialogue.Char]) == " " {
+				s.Dialogue.Dialogue += "\n"
+				s.Dialogue.Column = 0
+			} else {
+				s.Dialogue.Column += 1
+			}
+			s.Dialogue.Char += 1
+		} else {
+			s.Dialogue.Speed = 0
+			keyBuffer := []ebiten.Key{}
+			keyBuffer = inpututil.AppendPressedKeys(keyBuffer)
+
+			if len(keyBuffer) > 0 {
+				if keyBuffer[0] == ebiten.KeyN {
+					if s.Dialogue.Index+1 != len(ally.Dialogue) {
+						s.Dialogue.Next()
+					} else {
+						s.Dialogue.InvokeExit()
+					}
+				}
+			}
+		}
+	}
 }
 
 func (s *Overworld) getValidInputs() map[ebiten.Key]bool {
@@ -261,8 +367,12 @@ func (s *Overworld) renderOverworld(screen *ebiten.Image) {
 
 func (s *Overworld) renderText(screen *ebiten.Image, displayText string) {
 	speakerOpts := &text.DrawOptions{}
-	speakerOpts.LayoutOptions.PrimaryAlign = text.AlignCenter
-	speakerOpts.GeoM.Translate(120, 140)
 
+	w, _ := text.Measure(displayText, s.Orchestrator.Graphics.Font, 0)
+	screenW := screen.Bounds().Dx()
+
+	posX := math.Floor(float64(screenW-int(math.Floor(w))) / 2.0)
+
+	speakerOpts.GeoM.Translate(posX, 140)
 	text.Draw(screen, displayText, s.Orchestrator.Graphics.Font, speakerOpts)
 }
