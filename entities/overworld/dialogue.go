@@ -16,7 +16,6 @@ const (
 	INACTIVE Event = iota
 	ENTERING
 	ACTIVE
-	EXITING
 )
 
 type Dialogue struct {
@@ -53,7 +52,6 @@ func InitDialogue() *Dialogue {
 		INACTIVE: dialogue.Inactive,
 		ACTIVE:   dialogue.Active,
 		ENTERING: dialogue.Entrance,
-		EXITING:  dialogue.Exit,
 	}
 
 	dialogue.EventDictionary = eventDictionary
@@ -81,10 +79,6 @@ func (d *Dialogue) InvokeEntrance() {
 	d.Event = ENTERING
 }
 
-func (d *Dialogue) InvokeExit() {
-	d.Event = EXITING
-}
-
 func (d *Dialogue) IsActive() bool {
 	return d.Event == ACTIVE
 }
@@ -95,10 +89,6 @@ func (d *Dialogue) IsInactive() bool {
 
 func (d *Dialogue) IsEntering() bool {
 	return d.Event == ENTERING
-}
-
-func (d *Dialogue) IsExiting() bool {
-	return d.Event == EXITING
 }
 
 func (d *Dialogue) IsTerminated() bool {
@@ -114,7 +104,6 @@ func (d *Dialogue) Animate() {
 }
 
 func (d *Dialogue) Inactive() {
-	d.Index = 0
 	d.SetX(240)
 }
 
@@ -123,13 +112,7 @@ func (d *Dialogue) Active() {
 }
 
 func (d *Dialogue) Entrance() {
-	d.Terminated = false
 	d.AnimateEntrance()
-}
-
-func (d *Dialogue) Exit() {
-	d.Terminated = true
-	d.AnimateExit()
 }
 
 func (d *Dialogue) AnimateEntrance() {
@@ -142,18 +125,15 @@ func (d *Dialogue) AnimateEntrance() {
 	}
 }
 
-func (d *Dialogue) AnimateExit() {
-	x := int((d.AnimationManager.Calculate(math.Sin, 240, 0.05, 240, 1)))
+func (d *Dialogue) Reset(effect func()) {
+	d.Index = 0
+	d.Char = 0
+	d.Column = 0
+	d.Dialogue = ""
+	d.Speed = 1
 
-	if x != 240 {
-		d.SetX(x)
-	} else {
-		d.InvokeInactive()
-	}
-}
-
-func (d *Dialogue) Reset() {
-	d.InvokeExit()
+	d.InvokeInactive()
+	effect()
 }
 
 func (d *Dialogue) Next() {

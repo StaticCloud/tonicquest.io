@@ -297,7 +297,7 @@ func (s *Overworld) DialogueActive() {
 					if s.Dialogue.Index+1 != len(ally.Dialogue) {
 						s.Dialogue.Next()
 					} else {
-						s.Dialogue.InvokeExit()
+						s.Dialogue.Reset(s.Default)
 					}
 				}
 			}
@@ -375,4 +375,8 @@ func (s *Overworld) renderText(screen *ebiten.Image, displayText string) {
 
 	speakerOpts.GeoM.Translate(posX, 140)
 	text.Draw(screen, displayText, s.Orchestrator.Graphics.Font, speakerOpts)
+}
+
+func (s *Overworld) Default() {
+	s.Event = DEFAULT
 }
