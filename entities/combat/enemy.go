@@ -96,7 +96,7 @@ func (e *Enemy) Animate() {
 
 func (e *Enemy) Entrance() {
 	enemyX := int((e.AnimationManager.Calculate(math.Sin, 240, -0.05, 360, 1)))
-	healthY := int((e.Health.AnimationManager.Calculate(math.Sin, 24, 0.05, -12, 1)))
+	healthY := int((e.Health.AnimationManager.Calculate(math.Sin, 28, 0.05, -12, 1)))
 
 	if enemyX != 120 {
 		e.SetX(enemyX)

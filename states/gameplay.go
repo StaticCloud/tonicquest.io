@@ -218,7 +218,7 @@ func (s *Gameplay) DrawPlayerHud(screen *ebiten.Image) {
 	s.DrawHealth(screen, "health_border", s.Player.Health.Value, s.Player.Health.Coords.X, s.Player.Health.Coords.Y)
 
 	options := &text.DrawOptions{}
-	options.GeoM.Translate(5, float64(s.Player.Health.Coords.Y)+1)
+	options.GeoM.Translate(5, float64(s.Player.Health.Coords.Y)-3)
 	text.Draw(screen, "HP", s.Orchestrator.Graphics.Font, options)
 }
 
@@ -226,6 +226,6 @@ func (s *Gameplay) DrawEnemyHud(screen *ebiten.Image) {
 	s.DrawHealth(screen, "health_enemy_border", s.Enemy.Health.Value, s.Enemy.Health.Coords.X, s.Enemy.Health.Coords.Y)
 
 	options := &text.DrawOptions{}
-	options.GeoM.Translate(4, float64(s.Enemy.Health.Coords.Y)-8)
+	options.GeoM.Translate(4, float64(s.Enemy.Health.Coords.Y)-14)
 	text.Draw(screen, s.Enemy.Name, s.Orchestrator.Graphics.Font, options)
 }

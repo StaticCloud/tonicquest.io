@@ -15,7 +15,7 @@ func InitBackground() *Background {
 	return &Background{
 		Coords: &Coords{
 			X: 240,
-			Y: 20,
+			Y: 25,
 		},
 		Substate:         ENTERING,
 		AnimationManager: utils.InitAnimationManager(),

@@ -156,7 +156,7 @@
                     "defeated": false,
                     "coordinates": {
                         "X": 7,
-                        "Y": 7
+                        "Y": 6
                     }
                 }
             ],
@@ -166,7 +166,7 @@
                     "sprite": "michael_cera",
                     "coordinates": {
                         "X": 8,
-                        "Y": 7
+                        "Y": 6
                     },
                     "dialogue": [
                         {
