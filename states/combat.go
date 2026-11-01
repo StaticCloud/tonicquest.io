@@ -220,6 +220,32 @@ func (s *Gameplay) DrawPlayerHud(screen *ebiten.Image) {
 	options := &text.DrawOptions{}
 	options.GeoM.Translate(5, float64(s.Player.Health.Coords.Y)-3)
 	text.Draw(screen, "HP", s.Orchestrator.Graphics.Font, options)
+
+	for i, inventory := range s.Player.Inventory {
+		sprite := ""
+
+		x := float64(128 * (i + 1))
+
+		if inventory.Item.Name == "Potion" {
+			sprite = "potion"
+		}
+
+		options := &ebiten.DrawImageOptions{}
+		options.GeoM.Translate(x, float64(s.Player.Health.Coords.Y)-3)
+		screen.DrawImage(
+			s.Orchestrator.Graphics.Sprites[sprite],
+			options,
+		)
+
+		for j := range inventory.Quantity {
+			options := &ebiten.DrawImageOptions{}
+			options.GeoM.Translate(x+float64(2*j), float64(s.Player.Health.Coords.Y)+10)
+			screen.DrawImage(
+				s.Orchestrator.Graphics.Sprites["quantity_dot"],
+				options,
+			)
+		}
+	}
 }
 
 func (s *Gameplay) DrawEnemyHud(screen *ebiten.Image) {

@@ -24,10 +24,11 @@ type Player struct {
 	Coords           *Coords
 	Substate         SubState
 	AnimationManager *utils.AnimationManager
+	Inventory        []*Inventory
 }
 
 func InitPlayer(keys map[ebiten.Key]string, health int) *Player {
-	return &Player{
+	player := &Player{
 		Keys:       keys,
 		AttackList: []string{},
 		Health:     InitHealth(health, 25, 160),
@@ -38,6 +39,17 @@ func InitPlayer(keys map[ebiten.Key]string, health int) *Player {
 		Substate:         ENTERING,
 		AnimationManager: utils.InitAnimationManager(),
 	}
+
+	itemManager := InitItemManager(player)
+
+	player.Inventory = []*Inventory{
+		{
+			Item:     *itemManager.InitPotion(),
+			Quantity: 5,
+		},
+	}
+
+	return player
 }
 
 func (p *Player) Attack() string {
@@ -45,11 +57,20 @@ func (p *Player) Attack() string {
 	keyBuffer = inpututil.AppendJustPressedKeys(keyBuffer)
 
 	if len(keyBuffer) > 0 {
-		key := p.Keys[keyBuffer[0]]
-		p.AttackList = append(p.AttackList, key)
-		return key
+		if keyBuffer[0] != ebiten.KeyQ {
+			key := p.Keys[keyBuffer[0]]
+			p.AttackList = append(p.AttackList, key)
+			return key
+		} else {
+			p.Inventory[0].Use()
+		}
+		return ""
 	}
 	return ""
+}
+
+func (p *Player) Heal() {
+	p.Health.Reset()
 }
 
 func (p *Player) Update() error {
