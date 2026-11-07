@@ -13,6 +13,7 @@ type Item struct {
 type ItemManager struct {
 	Player *Player
 	Potion *Item
+	Shield *Item
 }
 
 func InitItemManager(player *Player) *ItemManager {
@@ -21,6 +22,10 @@ func InitItemManager(player *Player) *ItemManager {
 		Potion: &Item{
 			Name:   "Potion",
 			Effect: player.Reset,
+		},
+		Shield: &Item{
+			Name:   "Shield",
+			Effect: player.ApplyShield,
 		},
 	}
 
@@ -31,8 +36,11 @@ func (m *ItemManager) InitPotion() *Item {
 	return m.Potion
 }
 
-func (i *Inventory) Use() {
+func (m *ItemManager) InitShield() *Item {
+	return m.Shield
+}
 
+func (i *Inventory) Use() {
 	if i.Quantity > 0 {
 		i.Item.Effect()
 		i.Quantity -= 1

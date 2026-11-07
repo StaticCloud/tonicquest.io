@@ -9,11 +9,17 @@ import (
 )
 
 type SubState int
+type Power int
 
 const (
 	ENTERING SubState = iota
 	IN_COMBAT
 	TAKE_DAMAGE
+)
+
+const (
+	NONE Power = iota
+	SHIELD
 )
 
 type Player struct {
@@ -23,7 +29,9 @@ type Player struct {
 	Health           *Health
 	Coords           *Coords
 	Substate         SubState
+	Power            Power
 	AnimationManager *utils.AnimationManager
+	UsedItem         bool
 	Inventory        []*Inventory
 }
 
@@ -38,6 +46,7 @@ func InitPlayer(keys map[ebiten.Key]string, health int) *Player {
 		},
 		Substate:         ENTERING,
 		AnimationManager: utils.InitAnimationManager(),
+		Power:            NONE,
 	}
 
 	itemManager := InitItemManager(player)
@@ -45,6 +54,10 @@ func InitPlayer(keys map[ebiten.Key]string, health int) *Player {
 	player.Inventory = []*Inventory{
 		{
 			Item:     *itemManager.InitPotion(),
+			Quantity: 5,
+		},
+		{
+			Item:     *itemManager.InitShield(),
 			Quantity: 5,
 		},
 	}
@@ -57,12 +70,18 @@ func (p *Player) Attack() string {
 	keyBuffer = inpututil.AppendJustPressedKeys(keyBuffer)
 
 	if len(keyBuffer) > 0 {
-		if keyBuffer[0] != ebiten.KeyQ {
+		if keyBuffer[0] != ebiten.KeyQ && keyBuffer[0] != ebiten.KeyW {
 			key := p.Keys[keyBuffer[0]]
 			p.AttackList = append(p.AttackList, key)
 			return key
-		} else {
-			p.Inventory[0].Use()
+		} else if (keyBuffer[0] == ebiten.KeyQ || keyBuffer[0] == ebiten.KeyW) && p.UsedItem == false && p.Power != SHIELD {
+			p.UsedItem = true
+			if keyBuffer[0] == ebiten.KeyQ {
+				p.Inventory[0].Use()
+			}
+			if keyBuffer[0] == ebiten.KeyW {
+				p.Inventory[1].Use()
+			}
 		}
 		return ""
 	}
@@ -83,9 +102,14 @@ func (p *Player) Update() error {
 }
 
 func (p *Player) TakeDamage(amount int) {
-	p.Health.TakeDamage(amount)
-	p.AnimationManager.Reset()
-	p.Substate = TAKE_DAMAGE
+	switch p.Power {
+	case NONE:
+		p.Health.TakeDamage(amount)
+		p.AnimationManager.Reset()
+		p.Substate = TAKE_DAMAGE
+	case SHIELD:
+		p.DisableShield()
+	}
 }
 
 func (p *Player) Reset() {
@@ -128,4 +152,12 @@ func (p *Player) Entrance() {
 		p.AnimationManager.Pause = true
 		p.Health.AnimationManager.Pause = true
 	}
+}
+
+func (p *Player) ApplyShield() {
+	p.Power = SHIELD
+}
+
+func (p *Player) DisableShield() {
+	p.Power = NONE
 }

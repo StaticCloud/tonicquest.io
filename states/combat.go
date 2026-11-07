@@ -3,6 +3,7 @@ package states
 import (
 	"fmt"
 	"math"
+	"strings"
 	"tonic-quest/entities/combat"
 	"tonic-quest/entities/utils"
 	"tonic-quest/orchestrator"
@@ -96,6 +97,7 @@ func (s *Gameplay) Run() (StateName, error) {
 			if s.Timer.Pause == false {
 				s.Timer.Interval(60)
 			} else {
+				s.Player.UsedItem = false
 				key = s.Enemy.Attack()
 			}
 		}
@@ -221,29 +223,40 @@ func (s *Gameplay) DrawPlayerHud(screen *ebiten.Image) {
 	options.GeoM.Translate(5, float64(s.Player.Health.Coords.Y)-3)
 	text.Draw(screen, "HP", s.Orchestrator.Graphics.Font, options)
 
-	for i, inventory := range s.Player.Inventory {
-		sprite := ""
-
-		x := float64(128 * (i + 1))
-
-		if inventory.Item.Name == "Potion" {
-			sprite = "potion"
-		}
-
+	if s.Player.Power == combat.SHIELD {
 		options := &ebiten.DrawImageOptions{}
-		options.GeoM.Translate(x, float64(s.Player.Health.Coords.Y)-3)
+		options.GeoM.Translate(127, float64(s.Player.Health.Coords.Y)-3)
 		screen.DrawImage(
-			s.Orchestrator.Graphics.Sprites[sprite],
+			s.Orchestrator.Graphics.Sprites["shield"],
 			options,
 		)
+	}
 
-		for j := range inventory.Quantity {
+	for i, inventory := range s.Player.Inventory {
+		sprite := strings.ToLower(inventory.Item.Name)
+
+		x := float64(170 + (i * 36))
+		{
 			options := &ebiten.DrawImageOptions{}
-			options.GeoM.Translate(x+float64(2*j), float64(s.Player.Health.Coords.Y)+10)
+			options.GeoM.Translate(x, float64(s.Player.Health.Coords.Y)-3)
 			screen.DrawImage(
-				s.Orchestrator.Graphics.Sprites["quantity_dot"],
+				s.Orchestrator.Graphics.Sprites[sprite],
 				options,
 			)
+		}
+
+		// for j := range inventory.Quantity {
+		// 	options := &ebiten.DrawImageOptions{}
+		// 	options.GeoM.Translate(x+float64(2*j), float64(s.Player.Health.Coords.Y)+10)
+		// 	screen.DrawImage(
+		// 		s.Orchestrator.Graphics.Sprites["quantity_dot"],
+		// 		options,
+		// 	)
+		// }
+		{
+			options := &text.DrawOptions{}
+			options.GeoM.Translate(x+12, float64(s.Player.Health.Coords.Y)-5)
+			text.Draw(screen, fmt.Sprintf("x%d", inventory.Quantity), s.Orchestrator.Graphics.Font, options)
 		}
 	}
 }

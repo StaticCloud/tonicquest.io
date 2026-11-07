@@ -54,7 +54,8 @@ var sourceSprites map[string]string = map[string]string{
 	"dialogue_background": "./graphics/sprites/dialogue/text_background.png",
 	"dialogue_backdrop":   "./graphics/sprites/dialogue/backdrop.png",
 	"potion":              "./graphics/sprites/combat/potion.png",
-	"quantity_dot":        "./graphics/sprites/combat/literally_just_a_red_pixel.png",
+	"shield":              "./graphics/sprites/combat/shield.png",
+	"quantity_dot":        "./graphics/sprites/combat/literally_just_a_white_pixel.png",
 }
 
 var animatedSprites map[string]*Animation = map[string]*Animation{
