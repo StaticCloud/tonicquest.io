@@ -42,8 +42,8 @@ type Savepoint struct {
 
 type Dialogue struct {
 	Speaker struct {
-		Name   string `json:"name"`
-		Sprite string `json:"sprite"`
+		Name    string `json:"name"`
+		Emotion string `json:"emotion"`
 	} `json:"speaker"`
 	Text  string `json:"text"`
 	Pause bool   `json:"pause,omitempty"`

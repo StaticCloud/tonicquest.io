@@ -3,6 +3,7 @@ package states
 import (
 	"fmt"
 	"math"
+	"strings"
 	data "tonic-quest/data/overworld"
 	"tonic-quest/entities/combat"
 	"tonic-quest/entities/overworld"
@@ -177,7 +178,6 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 	for _, ally := range s.World.Locations[0].Allies {
 		allyOptions := &ebiten.DrawImageOptions{}
 
-		allyOptions.GeoM.Scale(0.2, 0.2)
 		allyOptions.GeoM.Translate(float64(ally.Coordinates.X)*20, float64(ally.Coordinates.Y)*20)
 
 		screen.DrawImage(
@@ -240,9 +240,15 @@ func (s *Overworld) Draw(screen *ebiten.Image) {
 		options.GeoM.Translate(float64(s.Dialogue.Coords.X)+10, 55)
 		options.LineSpacing = 11 * 1.5
 
-		s.Orchestrator.Graphics.DrawAnimation(current.Speaker.Sprite, s.Dialogue.Coords.X+10, 10, screen, float64(s.Dialogue.Speed))
+		sprite := s.generateSprite(current.Speaker.Name, current.Speaker.Emotion)
+
+		s.Orchestrator.Graphics.DrawAnimation(sprite, s.Dialogue.Coords.X+10, 10, screen, float64(s.Dialogue.Speed))
 		text.Draw(screen, s.Dialogue.Dialogue, s.Orchestrator.Graphics.Font, options)
 	}
+}
+
+func (s *Overworld) generateSprite(speaker, emotion string) string {
+	return fmt.Sprintf("%s_%s", strings.ToLower(speaker), emotion)
 }
 
 func (s *Overworld) SetEvent(event Event) {

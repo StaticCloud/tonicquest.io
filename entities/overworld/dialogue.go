@@ -24,7 +24,6 @@ type Dialogue struct {
 	Column           int
 	Dialogue         string
 	Speed            float64
-	Terminated       bool
 	AnimationManager utils.AnimationManager
 	Coords           *Coords
 	Event            Event
@@ -39,7 +38,6 @@ func InitDialogue() *Dialogue {
 		Column:           0,
 		Dialogue:         "",
 		Speed:            1,
-		Terminated:       true,
 		AnimationManager: *utils.InitAnimationManager(),
 		Coords: &Coords{
 			X: 240,
@@ -91,10 +89,6 @@ func (d *Dialogue) IsEntering() bool {
 	return d.Event == ENTERING
 }
 
-func (d *Dialogue) IsTerminated() bool {
-	return d.Terminated == true
-}
-
 func (d *Dialogue) SetX(x int) {
 	d.Coords.X = x
 }
@@ -108,10 +102,12 @@ func (d *Dialogue) Inactive() {
 }
 
 func (d *Dialogue) Active() {
+	d.AnimationManager.Pause = true
 	d.SetX(0)
 }
 
 func (d *Dialogue) Entrance() {
+	d.AnimationManager.Pause = false
 	d.AnimateEntrance()
 }
 
@@ -131,7 +127,9 @@ func (d *Dialogue) Reset(effect func()) {
 	d.Column = 0
 	d.Dialogue = ""
 	d.Speed = 1
+	d.SetX(240)
 
+	d.AnimationManager.Tick = 0
 	d.InvokeInactive()
 	effect()
 }

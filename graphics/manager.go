@@ -44,7 +44,7 @@ var sourceSprites map[string]string = map[string]string{
 	"culo":                "./graphics/sprites/carol.png",
 	"wall":                "./graphics/sprites/wall.png",
 	"bunkus":              "./graphics/sprites/bunkus.png",
-	"michael_cera":        "./graphics/sprites/michael_cera.png",
+	"dawn":                "./graphics/sprites/overworld/dawn.png",
 	"typewriter":          "./graphics/sprites/typewriter.png",
 	"note":                "./graphics/sprites/note.png",
 	"note_correct":        "./graphics/sprites/note_correct.png",
@@ -59,11 +59,11 @@ var sourceSprites map[string]string = map[string]string{
 }
 
 var animatedSprites map[string]*Animation = map[string]*Animation{
-	"carol_overworld":      InitAnimation("./graphics/sprites/bunkus.png", 20, 20, 5),
-	"carol_idle":           InitAnimation("./graphics/sprites/combat/carol_idle.png", 120, 120, 2),
-	"culo_idle":            InitAnimation("./graphics/sprites/combat/culo_idle.png", 120, 120, 2),
-	"carol_neutral":        InitAnimation("./graphics/sprites/dialogue/carol_neutral.png", 40, 40, 2),
-	"michael_cera_neutral": InitAnimation("./graphics/sprites/dialogue/michael_cera.png", 40, 40, 2),
+	"carol_overworld": InitAnimation("./graphics/sprites/bunkus.png", 20, 20, 5),
+	"carol_idle":      InitAnimation("./graphics/sprites/combat/carol_idle.png", 120, 120, 2),
+	"culo_idle":       InitAnimation("./graphics/sprites/combat/culo_idle.png", 120, 120, 2),
+	"carol_neutral":   InitAnimation("./graphics/sprites/dialogue/carol_neutral.png", 40, 40, 2),
+	"dawn_neutral":    InitAnimation("./graphics/sprites/dialogue/dawn_neutral.png", 40, 40, 2),
 }
 
 var backgrounds map[string]*ebiten.Image = map[string]*ebiten.Image{}

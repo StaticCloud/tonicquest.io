@@ -163,7 +163,7 @@
             "allies": [
                 {
                     "name": "",
-                    "sprite": "michael_cera",
+                    "sprite": "dawn",
                     "coordinates": {
                         "X": 8,
                         "Y": 6
@@ -171,111 +171,24 @@
                     "dialogue": [
                         {
                             "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
+                                "name": "Dawn",
+                                "emotion": "neutral"
                             },
-                            "text": "Hey Carol! I need your help! I'm trying to pitch a Superbad legacy sequel, but there is a big problem!"
-                        },
-                        {
-                            "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
-                            },
-                            "text": "A demon has possessed Jonah Hill and turned him into an insecure douchenozzle."
-                        },
-                        {
-                            "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
-                            },
-                            "text": "He was the beating heart of the original Superbad. There is simply no Superbad 2 without Jonah Hill."
-                        },
-                        {
-                            "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
-                            },
-                            "text": "Obviously I'm referring to the Jonah Hill we all used to love, not... \"Jonah Hill.\""
+                            "text": "My name is Dawn! I am emotionally neutral right now!"
                         },
                         {
                             "speaker": {
                                 "name": "Carol",
-                                "sprite": "carol_neutral"
+                                "emotion": "neutral"
                             },
-                            "text": "What about Christopher?"
+                            "text": "My name is Carol. I am emotionally neutral right now."
                         },
                         {
                             "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
+                                "name": "Dawn",
+                                "emotion": "neutral"
                             },
-                            "text": "...who?"
-                        },
-                        {
-                            "speaker": {
-                                "name": "Carol",
-                                "sprite": "carol_neutral"
-                            },
-                            "text": "Christopher Mintz-Plasse"
-                        },
-                        {
-                            "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
-                            },
-                            "text": "...wait ...did he play one of the cops chasing down McLovin?"
-                        },
-                        {
-                            "speaker": {
-                                "name": "Carol",
-                                "sprite": "carol_neutral"
-                            },
-                            "text": "...",
-                            "pause": true
-                        },
-                        {
-                            "speaker": {
-                                "name": "Carol",
-                                "sprite": "carol_neutral"
-                            },
-                            "text": "...",
-                            "pause": true
-                        },
-                        {
-                            "speaker": {
-                                "name": "Carol",
-                                "sprite": "carol_neutral"
-                            },
-                            "text": "...",
-                            "pause": true
-                        },
-                        {
-                            "speaker": {
-                                "name": "Carol",
-                                "sprite": "carol_neutral"
-                            },
-                            "text": "...exactly."
-                        },
-                        {
-                            "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
-                            },
-                            "text": "Oh no, for the sequel I'm going for extraterrestrial minor-antagonists."
-                        },
-                        {
-                            "speaker": {
-                                "name": "Michael Cera",
-                                "sprite": "michael_cera_neutral"
-                            },
-                            "text": "I'd tell you more but I'm under NDA!"
-                        },
-                        {
-                            "speaker": {
-                                "name": "Carol",
-                                "sprite": "carol_neutral"
-                            },
-                            "text": "I'm literally dying of anticipation right now."
+                            "text": "Jinx! I think!"
                         }
                     ]
                 }
